@@ -1,49 +1,41 @@
-export interface CardFacet {
-  id: string;
-  label: string;
-}
-export interface RiftboundCard {
+export type RiftboundContentDTO = {
+  game: string;
+  version: string;
+  lastUpdated: string;
+  sets: SetDTO[];
+};
+
+export type SetDTO = {
   id: string;
   name: string;
+  cards: CardDTO[];
+};
+
+export type CardDTO = {
+  id: string;
   collectorNumber: number;
-  publicCode: string;
-  orientation: string;
   set: string;
-  setName: string;
-  domains: CardFacet[];
-  rarity: CardFacet;
-  cardType: CardFacet[];
-  cardImage: {
-    url: string;
-    accessibilityText: string;
-    colors: { primary: string; secondary: string; label: string };
-  };
-  illustrator: string[];
-  text: string;
-  energy?: number;
-  power?: number;
-}
+  name: string;
+  description: string;
+  type: string;
+  rarity: string;
+  faction: string;
+  stats: CardStatsDTO;
+  keywords: string[];
+  art: CardArtDTO;
+  flavorText: string;
+  tags: string[];
+};
 
-export interface CardsQuery {
-  search?: string;
-  set?: string;
-  domain?: string;
-  type?: string;
-  rarity?: string;
-  page?: number;
-  pageSize?: number;
-}
+export type CardStatsDTO = {
+  energy: number;
+  might: number;
+  cost: number;
+  power: number;
+};
 
-export interface CardsResult {
-  data: RiftboundCard[];
-  total: number;
-  page: number;
-  pageSize: number;
-}
-
-export interface CardsMeta {
-  sets: { id: string; label: string }[];
-  domains: CardFacet[];
-  types: CardFacet[];
-  rarities: CardFacet[];
-}
+export type CardArtDTO = {
+  thumbnailURL: string;
+  fullURL: string;
+  artist: string;
+};
