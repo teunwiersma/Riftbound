@@ -1,4 +1,4 @@
-import Card from "../components/card/card";
+import Card from "../../components/card/card";
 
 import { catalogData } from "@/api/data/catalog";
 
