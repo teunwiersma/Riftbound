@@ -13,7 +13,7 @@ type Props = {
 
 export default function Card({ data }: Props) {
   return (
-    <Link className={style.card} href={`../cards/${data.id}`}>
+    <Link className={style.card} href={`../pages/cards/${data.id}`}>
       <div className={style.image}>
         <Image
           alt={data.name}
