@@ -1,5 +1,5 @@
 
-export function CardsPage() {
+export default function CardsPage() {
 
   return (
     <div>
