@@ -1,0 +1,9 @@
+.catalog {
+  padding: 16px;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 16px;
+  max-width: 1024px;
+  margin: 0 auto;
+}

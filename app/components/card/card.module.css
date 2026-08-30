@@ -1,0 +1,27 @@
+.card {
+  position: relative;
+  cursor: pointer;
+
+  /* see: catalog gap */
+  width: calc(50% - 8px);
+  transition: transform .15s;
+
+  @media screen and (min-width: 768px) {
+    width: calc(33% - 9px);
+  }
+
+  @media screen and (min-width: 1024px) {
+    width: calc(20% - 13px);
+  }
+}
+
+.card:hover {
+  transform: scale(1.025);
+  z-index: 9999;
+}
+
+.image {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+}
