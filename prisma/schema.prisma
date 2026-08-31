@@ -1,0 +1,59 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// Singleton table holding RiftboundContentDTO's top-level metadata.
+model RiftboundContent {
+  id          Int      @id @default(autoincrement())
+  game        String
+  version     String
+  lastUpdated DateTime
+  sets        Set[]
+
+  @@map("content_metadata")
+}
+
+model Set {
+  id                 String            @id
+  name               String
+  cards              Card[]
+  riftboundContent   RiftboundContent? @relation(fields: [riftboundContentId], references: [id])
+  riftboundContentId Int?
+
+  @@map("sets")
+}
+
+model Card {
+  id               String   @id
+  collectorNumber  Int
+  set              Set      @relation(fields: [setId], references: [id])
+  setId            String
+  name             String
+  description      String
+  type             String
+  rarity           String
+  faction          String
+  keywords         String[]
+  flavorText       String
+  tags             String[]
+
+  // CardStatsDTO
+  energy Int
+  might  Int
+  cost   Int
+  power  Int
+
+  // CardArtDTO
+  thumbnailURL   String
+  fullURL        String
+  // Cached image bytes, used instead of the URLs to avoid re-fetching from the source on every load.
+  fullImage      Bytes?
+  artist         String
+
+  @@map("cards")
+}

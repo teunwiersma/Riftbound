@@ -1,0 +1,33 @@
+.card {
+  position: relative;
+  cursor: pointer;
+  transition: transform .15s;
+  width: 100%;
+
+  /* 
+   * Catalog gap is 16px: 
+   * Each aditional item in the row adds a gap to the sum
+  */
+  @media screen and (min-width: 425px) {
+    width: calc((100% - 16px) / 2);
+  }
+
+  @media screen and (min-width: 768px) {
+    width: calc((100% - 32px) / 3);
+  }
+
+  @media screen and (min-width: 1024px) {
+    width: calc((100% - 48px) / 4);
+  }
+}
+
+.card:hover {
+  transform: scale(1.025);
+  z-index: 9999;
+}
+
+.image {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+}
