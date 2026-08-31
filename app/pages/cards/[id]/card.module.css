@@ -1,0 +1,17 @@
+.cardDetails {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  max-width: 1024px;
+  margin: 0 auto;
+}
+
+.cardDetails button {
+  margin: 16px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  background-color: #475e79;
+  color: #ffffff;
+  border: none;
+  cursor: pointer;
+}
