@@ -20,6 +20,10 @@ const getCatalogData = async (
   const cards = await prisma.card.findMany({
     skip: (page - 1) * pageSize,
     take: pageSize,
+    // Excluded: embedding the cached image bytes directly in the page payload
+    // blows up page size (fine for a single card, not for a list). Served via
+    // a dedicated route instead, see app/api/cards/[id]/image/route.ts.
+    omit: { fullImage: true },
   });
 
   return cards.map((card) => ({
@@ -41,9 +45,7 @@ const getCatalogData = async (
     art: {
       thumbnailURL: card.thumbnailURL,
       fullURL: card.fullURL,
-      fullImage: card.fullImage
-        ? `data:image/png;base64,${Buffer.from(card.fullImage).toString("base64")}`
-        : undefined,
+      imageURL: `/api/cards/${card.id}/image`,
       artist: card.artist,
     },
     flavorText: card.flavorText,

@@ -17,7 +17,7 @@ export default function Card({ data }: Props) {
       <div className={style.image}>
         <Image
           alt={data.name}
-          src={data.art.fullImage ?? data.art.thumbnailURL}
+          src={data.art.imageURL ?? data.art.thumbnailURL}
           fill={true}
         />
       </div>
