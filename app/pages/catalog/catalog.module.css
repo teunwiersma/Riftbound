@@ -7,3 +7,8 @@
   max-width: 1024px;
   margin: 0 auto;
 }
+
+.loading {
+  color: pink;
+  font-size: 14px;
+}
