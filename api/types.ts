@@ -37,5 +37,6 @@ export type CardStatsDTO = {
 export type CardArtDTO = {
   thumbnailURL: string;
   fullURL: string;
+  imageURL?: string;
   artist: string;
 };
