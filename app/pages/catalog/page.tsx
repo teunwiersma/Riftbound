@@ -2,10 +2,10 @@ import Card from "../../components/card/card";
 
 import { catalogData } from "@/api/data/catalog";
 
-import style from './catalog.module.css';
+import style from "./catalog.module.css";
 
-export default function CatalogPage() {
-  const { data } = catalogData();
+export default async function CatalogPage() {
+  const { data } = await catalogData();
 
   return (
     <div className={style.catalog}>
