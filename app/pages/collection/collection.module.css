@@ -1,0 +1,9 @@
+.collection {
+  gap: 16px;
+  padding: 16px;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  max-width: 1024px;
+  margin: 0 auto;
+}
