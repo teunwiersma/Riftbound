@@ -1,7 +1,7 @@
 import prisma from "./prisma";
 import { CardDTO } from "../types";
 
-const DEFAULT_PAGE_SIZE = 12;
+export const DEFAULT_PAGE_SIZE = 50;
 
 export const catalogData = async (page = 1, pageSize = DEFAULT_PAGE_SIZE) => {
   const { data, error } = await getCatalogData(page, pageSize);

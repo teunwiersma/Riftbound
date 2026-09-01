@@ -1,7 +1,7 @@
 import prisma from "./prisma";
 import { CardDTO } from "../types";
 
-const DEFAULT_PAGE_SIZE = 20;
+export const DEFAULT_PAGE_SIZE = 50;
 
 export const collectionData = async (
   page = 1,

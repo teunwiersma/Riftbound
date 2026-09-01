@@ -1,21 +1,24 @@
-import Card from "@/app/components/card/card";
-import { collectionData } from "../../../api/data/collection";
+import {
+  collectionData,
+  DEFAULT_PAGE_SIZE,
+} from "../../../api/data/collection";
+import InfiniteCardGrid from "../../components/infiniteCardGrid/infiniteCardGrid";
 import style from "./collection.module.css";
 
 export default async function CollectionPage() {
   const { data } = await collectionData();
 
-  console.log("Collection data:", data);
   return (
     <div className={style.collectionPage}>
       <main>
         <div>
           <h1>Our BundaRuft collection</h1>
-          <div className={style.collection}>
-            {data.map((item, key) => (
-              <Card data={item} key={key} />
-            ))}
-          </div>
+          <InfiniteCardGrid
+            initialData={data}
+            apiPath="/api/collection"
+            pageSize={DEFAULT_PAGE_SIZE}
+            className={style.collection}
+          />
         </div>
       </main>
     </div>
