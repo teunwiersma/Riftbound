@@ -7,13 +7,18 @@
   --accent: #c84b2f;
   --accent-dark: #8b2e22;
   --gold: #d79c37;
+  --muted: #687672;
   color-scheme: light;
 
   /* defaults */
   --container-width: 1024px;
 
   /* nav */
-  --nav-height-desktop: 80px;
+  --nav-width-mobile: 140px;
+  --nav-width-desktop: 240px;
+  --nav-sidebar-border: #d9e0d6;
+  --nav-text-color-hover: #194735;
+  --nav-text-background-color: #f8faf5;
 }
 
 * {
@@ -21,7 +26,7 @@
 }
 
 body {
-  margin: var(--nav-height-desktop) 0 0;
+  margin: 0 0 0 var(--nav-width-desktop);
   background: var(--paper);
   color: var(--ink);
   font-family: "Trebuchet MS", "Segoe UI", sans-serif;

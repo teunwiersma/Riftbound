@@ -5,6 +5,7 @@ import style from './navigation.module.css'
 export default function Navigation() {
   return (
     <div className={style.navigation}>
+      <h1>Rifty Bounded Boys</h1>
       <nav>
         <Link href='/'>
           Dashboard

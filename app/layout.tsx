@@ -1,6 +1,7 @@
 import "./globals.css";
 
 import { Analytics } from "@vercel/analytics/next";
+import styles from './layout.module.css'
 
 import Navigation from "./components/navigation/navigation";
 
@@ -9,8 +10,10 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     <html lang="en">
       <body>
         <Navigation />
-        {children}
         <Analytics />
+        <main className={styles.layout}>
+          {children}
+        </main>
       </body>
     </html>
   );
