@@ -25,6 +25,7 @@ export type CardDTO = {
   art: CardArtDTO;
   flavorText: string;
   tags: string[];
+  quantity?: number;
 };
 
 export type CardStatsDTO = {

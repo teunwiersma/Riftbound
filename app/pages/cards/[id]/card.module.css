@@ -23,46 +23,6 @@
   margin: 0;
 }
 
-.collectionControls {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 1rem;
-}
-
-.collectionCount {
-  color: #ffffff;
-  font-size: 0.95rem;
-}
-
-.counterGroup {
-  display: flex;
-  flex-direction: column;
-  border-radius: 8px;
-  overflow: hidden;
-}
-
-.counterButton {
-  padding: 6px 20px;
-  border: none;
-  font-size: 1.1rem;
-  font-weight: 600;
-  line-height: 1;
-  cursor: pointer;
-}
-
-.counterButton:not(:last-child) {
-  border-bottom: 1px solid #000000;
-}
-
-.counterButton:hover {
-  background-color: #ffffff;
-}
-
-.counterButton:active {
-  transform: scale(0.96);
-}
-
 .content {
   display: flex;
   flex-direction: row;
@@ -107,24 +67,4 @@
   margin: 0.25rem 0;
   color: #ffffff;
   line-height: 1.5;
-}
-
-.cardButton {
-  padding: 8px 20px;
-  background-color: #000000;
-  color: #ffffff;
-  border: none;
-  border-radius: 8px;
-  font-size: 1.25rem;
-  font-weight: 600;
-  line-height: 1;
-  cursor: pointer;
-}
-
-.cardButton:hover {
-  background-color: #ffffff;
-}
-
-.cardButton:active {
-  transform: scale(0.96);
 }

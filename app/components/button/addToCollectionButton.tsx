@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
-import styles from "./card.module.css";
+import styles from "./button.module.css";
 
 type AddToCollectionButtonProps = {
   addToCollection: () => Promise<number>;

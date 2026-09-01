@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import prisma from "@/api/data/prisma";
 import styles from "./card.module.css";
-import AddToCollectionButton from "./addToCollectionButton";
+import AddToCollectionButton from "../../../components/button/addToCollectionButton";
 
 type CardDetailsProps = {
   params: Promise<{ id: string }>;

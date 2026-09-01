@@ -1,8 +1,11 @@
 .card {
   position: relative;
   cursor: pointer;
-  transition: transform .15s;
+  transition: transform 0.15s;
   width: 100%;
+  background-color: #1e1e1e;
+  border: 1px solid #000000;
+  border-radius: 8px;
 
   /* 
    * Catalog gap is 16px: 
@@ -19,6 +22,14 @@
   @media screen and (min-width: 1024px) {
     width: calc((100% - 48px) / 4);
   }
+
+  @media screen and (min-width: 1280px) {
+    width: calc((100% - 80px) / 6);
+  }
+
+  @media screen and (min-width: 1600px) {
+    width: calc((100% - 112px) / 8);
+  }
 }
 
 .card:hover {
@@ -30,4 +41,17 @@
   position: relative;
   width: 100%;
   aspect-ratio: 3 / 4;
+}
+
+.box {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+.collectionCounterControls {
+  display: flex;
+  justify-content: flex-end;
+  padding: 8px;
 }

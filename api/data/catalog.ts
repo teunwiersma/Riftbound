@@ -24,6 +24,7 @@ const getCatalogData = async (
     // blows up page size (fine for a single card, not for a list). Served via
     // a dedicated route instead, see app/api/cards/[id]/image/route.ts.
     omit: { fullImage: true },
+    include: { collectionItem: true },
   });
 
   return cards.map((card) => ({
@@ -50,5 +51,6 @@ const getCatalogData = async (
     },
     flavorText: card.flavorText,
     tags: card.tags,
+    quantity: card.collectionItem?.quantity ?? 0,
   }));
 };

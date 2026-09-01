@@ -1,26 +1,22 @@
 "use client";
 
 import { useEffect } from "react";
+import styles from "./error.module.css";
 
-import styles from "./card.module.css";
-
-type CardDetailsErrorProps = {
+type ErrorProps = {
   error: Error & { digest?: string };
   reset: () => void;
 };
 
-export default function CardDetailsError({
-  error,
-  reset,
-}: CardDetailsErrorProps) {
+export default function Error({ error, reset }: ErrorProps) {
   useEffect(() => {
     console.error(error);
   }, [error]);
 
   return (
-    <div className={styles.cardDetails}>
+    <div className={styles.errorDetails}>
       <p>We could not load this card.</p>
-      <button className={styles.cardButton} onClick={reset}>
+      <button className={styles.errorButton} onClick={reset}>
         Try again
       </button>
     </div>

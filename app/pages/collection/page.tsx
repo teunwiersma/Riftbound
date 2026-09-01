@@ -7,11 +7,11 @@ export default async function CollectionPage() {
 
   console.log("Collection data:", data);
   return (
-    <div className={style.collection}>
+    <div className={style.collectionPage}>
       <main>
         <div>
           <h1>Our BundaRuft collection</h1>
-          <div>
+          <div className={style.collection}>
             {data.map((item, key) => (
               <Card data={item} key={key} />
             ))}

@@ -1,9 +1,11 @@
-.collection {
-  gap: 16px;
+.collectionPage {
   padding: 16px;
+}
+
+.collection {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  max-width: 1024px;
-  margin: 0 auto;
+  gap: 16px;
+  width: 100%;
 }
