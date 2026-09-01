@@ -8,6 +8,12 @@
   --accent-dark: #8b2e22;
   --gold: #d79c37;
   color-scheme: light;
+
+  /* defaults */
+  --container-width: 1024px;
+
+  /* nav */
+  --nav-height-desktop: 80px;
 }
 
 * {
@@ -15,7 +21,7 @@
 }
 
 body {
-  margin: 0;
+  margin: var(--nav-height-desktop) 0 0;
   background: var(--paper);
   color: var(--ink);
   font-family: "Trebuchet MS", "Segoe UI", sans-serif;
