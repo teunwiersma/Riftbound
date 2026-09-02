@@ -1,0 +1,8 @@
+.image {
+  transition: all .25s;
+  transform-style: preserve-3d;
+}
+
+.image:hover {
+  /* transform: translate3d(10px, 10px, 75px); */
+}
