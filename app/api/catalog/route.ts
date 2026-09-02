@@ -10,7 +10,15 @@ export async function GET(request: NextRequest) {
   const page = pageParam ? Number(pageParam) : undefined;
   const pageSize = pageSizeParam ? Number(pageSizeParam) : undefined;
 
-  const { data, error } = await catalogData(page, pageSize);
+  const filters = {
+    search: searchParams.get("search") ?? undefined,
+    set: searchParams.get("set") ?? undefined,
+    rarity: searchParams.get("rarity") ?? undefined,
+    type: searchParams.get("type") ?? undefined,
+    runeType: searchParams.get("runeType") ?? undefined,
+  };
+
+  const { data, error } = await catalogData(page, pageSize, filters);
 
   if (error || !data) {
     return NextResponse.json(

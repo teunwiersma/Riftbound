@@ -42,3 +42,11 @@ export type CardArtDTO = {
   imageURL?: string;
   artist: string;
 };
+
+export type CardFilters = {
+  search?: string;
+  set?: string;
+  rarity?: string;
+  type?: string;
+  runeType?: string;
+};
