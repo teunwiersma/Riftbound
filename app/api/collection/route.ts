@@ -10,7 +10,14 @@ export async function GET(request: NextRequest) {
   const page = pageParam ? Number(pageParam) : undefined;
   const pageSize = pageSizeParam ? Number(pageSizeParam) : undefined;
 
-  const { data } = await collectionData(page, pageSize);
+  const filters = {
+    set: searchParams.get("set") ?? undefined,
+    rarity: searchParams.get("rarity") ?? undefined,
+    type: searchParams.get("type") ?? undefined,
+    runeType: searchParams.get("runeType") ?? undefined,
+  };
+
+  const { data } = await collectionData(page, pageSize, filters);
 
   return NextResponse.json({ data });
 }

@@ -1,0 +1,104 @@
+.browser {
+  display: grid;
+  gap: 16px;
+}
+
+.filters {
+  display: flex;
+  align-items: end;
+  gap: 16px;
+  padding: 16px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+
+.filterGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(130px, 1fr));
+  gap: 12px;
+  flex: 1;
+}
+
+.runeFilters {
+  display: flex;
+  gap: 8px;
+}
+
+.runeButton {
+  display: grid;
+  place-items: center;
+  width: 82px;
+  height: 82px;
+  padding: 10px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.runeButton img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.runeButton:hover,
+.runeButtonSelected {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--gold) 25%, transparent);
+}
+
+.filterField {
+  display: grid;
+  gap: 5px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.filterField select {
+  width: 100%;
+  min-width: 0;
+  padding: 7px 9px;
+  color: var(--ink);
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.resetButton {
+  padding: 8px 12px;
+  color: var(--collection-dark);
+  background: transparent;
+  border: 1px solid var(--collection);
+  border-radius: 4px;
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.resetButton:hover {
+  color: var(--line);
+  background: var(--collection);
+}
+
+@media (max-width: 720px) {
+  .filters {
+    display: grid;
+  }
+
+  .runeFilters {
+    flex-wrap: wrap;
+  }
+
+  .filterGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .resetButton {
+    justify-self: start;
+  }
+}

@@ -1,10 +1,15 @@
 import prisma from "./prisma";
 import { CardDTO } from "../types";
+import type { CardFilters } from "../types";
 
 export const DEFAULT_PAGE_SIZE = 50;
 
-export const catalogData = async (page = 1, pageSize = DEFAULT_PAGE_SIZE) => {
-  const { data, error } = await getCatalogData(page, pageSize);
+export const catalogData = async (
+  page = 1,
+  pageSize = DEFAULT_PAGE_SIZE,
+  filters: CardFilters = {},
+) => {
+  const { data, error } = await getCatalogData(page, pageSize, filters);
 
   return {
     data,
@@ -25,11 +30,18 @@ export type CatalogData =
 const getCatalogData = async (
   page: number,
   pageSize: number,
+  filters: CardFilters,
 ): Promise<CatalogData> => {
   try {
     const cards = await prisma.card.findMany({
       skip: (page - 1) * pageSize,
       take: pageSize,
+      where: {
+        ...(filters.set && { setId: filters.set }),
+        ...(filters.rarity && { rarity: filters.rarity }),
+        ...(filters.type && { type: filters.type }),
+        ...(filters.runeType && { faction: filters.runeType }),
+      },
       // Excluded: embedding the cached image bytes directly in the page payload
       // blows up page size (fine for a single card, not for a list). Served via
       // a dedicated route instead, see app/api/cards/[id]/image/route.ts.

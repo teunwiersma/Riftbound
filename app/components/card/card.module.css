@@ -5,7 +5,7 @@
   width: 100%;
   background-color: var(--panel);
   border: 1px solid var(--line);
-  border-radius: 4px;
+  border-radius: 8px;
   color: var(--ink);
 
   /* 
@@ -42,6 +42,7 @@
   position: relative;
   width: 100%;
   aspect-ratio: 3 / 4;
+  overflow: hidden;
   background-color: var(--paper);
 }
 
@@ -67,4 +68,12 @@
 .collectionCounterControls {
   display: flex;
   padding: 0 8px 8px;
+}
+
+.battlefieldArt {
+  width: 133.333% !important;
+  height: 75% !important;
+  top: 12.5% !important;
+  left: -16.667% !important;
+  transform: rotate(90deg);
 }
