@@ -2,6 +2,7 @@
   position: relative;
   cursor: pointer;
   transition: transform 0.15s;
+  transition: transform 0.15s;
   width: 100%;
   background-color: var(--panel);
   border: 1px solid var(--line);
@@ -22,6 +23,14 @@
 
   @media screen and (min-width: 1024px) {
     width: calc((100% - 48px) / 4);
+  }
+
+  @media screen and (min-width: 1280px) {
+    width: calc((100% - 80px) / 6);
+  }
+
+  @media screen and (min-width: 1600px) {
+    width: calc((100% - 112px) / 8);
   }
 
   @media screen and (min-width: 1280px) {

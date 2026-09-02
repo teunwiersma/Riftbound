@@ -1,3 +1,5 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 
@@ -10,10 +12,18 @@ import {
   addToCollection,
   removeHoloFromCollection,
   removeFromCollection,
+  type CollectionActions,
 } from "@/api/data/collectionActions";
 
 type Props = {
   data: CardDTO;
+};
+
+const collectionActions: CollectionActions = {
+  addToCollection,
+  removeFromCollection,
+  addHoloToCollection,
+  removeHoloFromCollection,
 };
 
 export default function Card({ data }: Props) {
@@ -28,7 +38,11 @@ export default function Card({ data }: Props) {
             alt={data.name}
             src={data.art.imageURL ?? data.art.thumbnailURL}
             fill={true}
-            sizes="(min-width: 425px) 188px, (min-width: 768px) 235px, 343px"
+            sizes="
+              (min-width: 1440px) 180px,
+              (min-width: 768px) 235px,
+              (min-width: 425px) 188px,
+              343px"
             loading="eager"
           />
         </div>
@@ -38,11 +52,8 @@ export default function Card({ data }: Props) {
       <div className={style.collectionCounterControls}>
         <AddToCollectionButton
           cardId={data.id}
-          addToCollection={addToCollection}
-          removeFromCollection={removeFromCollection}
+          actions={collectionActions}
           initialQuantity={data.quantity ?? 0}
-          addHoloToCollection={addHoloToCollection}
-          removeHoloFromCollection={removeHoloFromCollection}
           initialHoloQuantity={data.holoQuantity ?? 0}
         />
       </div>

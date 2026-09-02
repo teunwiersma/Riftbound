@@ -2,25 +2,20 @@
 
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
+import type { CollectionActions } from "@/api/data/collectionActions";
 import styles from "./button.module.css";
 
 type AddToCollectionButtonProps = {
   cardId: string;
-  addToCollection: (cardId: string) => Promise<number>;
-  removeFromCollection: (cardId: string) => Promise<number>;
+  actions: CollectionActions;
   initialQuantity: number;
-  addHoloToCollection: (cardId: string) => Promise<number>;
-  removeHoloFromCollection: (cardId: string) => Promise<number>;
   initialHoloQuantity: number;
 };
 
 export default function AddToCollectionButton({
   cardId,
-  addToCollection,
-  removeFromCollection,
+  actions,
   initialQuantity,
-  addHoloToCollection,
-  removeHoloFromCollection,
   initialHoloQuantity,
 }: AddToCollectionButtonProps) {
   const [quantity, setQuantity] = useState(initialQuantity);
@@ -30,7 +25,7 @@ export default function AddToCollectionButton({
   function handleAdd() {
     startTransition(async () => {
       try {
-        const updatedQuantity = await addToCollection(cardId);
+        const updatedQuantity = await actions.addToCollection(cardId);
 
         setQuantity(updatedQuantity);
         toast.success("Added!");
@@ -43,7 +38,7 @@ export default function AddToCollectionButton({
   function handleRemove() {
     startTransition(async () => {
       try {
-        const updatedQuantity = await removeFromCollection(cardId);
+        const updatedQuantity = await actions.removeFromCollection(cardId);
 
         setQuantity(updatedQuantity);
         toast.success("Removed!");
@@ -56,7 +51,7 @@ export default function AddToCollectionButton({
   function handleAddHolo() {
     startTransition(async () => {
       try {
-        const updatedQuantity = await addHoloToCollection(cardId);
+        const updatedQuantity = await actions.addHoloToCollection(cardId);
 
         setHoloQuantity(updatedQuantity);
         toast.success("Holo added!");
@@ -69,7 +64,7 @@ export default function AddToCollectionButton({
   function handleRemoveHolo() {
     startTransition(async () => {
       try {
-        const updatedQuantity = await removeHoloFromCollection(cardId);
+        const updatedQuantity = await actions.removeHoloFromCollection(cardId);
 
         setHoloQuantity(updatedQuantity);
         toast.success("Holo removed!");
