@@ -5,9 +5,10 @@
   max-width: 1024px;
   margin: 2rem auto;
   padding: 1.5rem;
-  background-color: #1e1e1e;
-  border-radius: 16px;
-  color: #ffffff;
+  background-color: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--ink);
 }
 
 .header {
@@ -16,7 +17,7 @@
   justify-content: space-between;
   align-items: center;
   padding-bottom: 1rem;
-  border-bottom: 1px solid #3a3a3a;
+  border-bottom: 1px solid var(--line);
 }
 
 .header h1 {
@@ -33,7 +34,7 @@
 .image {
   flex-shrink: 0;
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--ink) 25%, transparent);
 }
 
 .info {
@@ -46,11 +47,11 @@
   margin-top: 1.5rem;
   margin-bottom: 0.5rem;
   padding-bottom: 0.35rem;
-  color: #ffffff;
+  color: var(--accent-dark);
   font-size: 1.1rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  border-bottom: 1px solid #3a3a3a;
+  border-bottom: 1px solid var(--line);
 }
 
 .info h2:first-child {
@@ -59,12 +60,12 @@
 
 .info h3 {
   margin: 0.25rem 0;
-  color: #ffffff;
+  color: var(--ink);
   font-weight: 500;
 }
 
 .info p {
   margin: 0.25rem 0;
-  color: #ffffff;
+  color: var(--muted);
   line-height: 1.5;
 }

@@ -26,6 +26,7 @@ export type CardDTO = {
   flavorText: string;
   tags: string[];
   quantity?: number;
+  holoQuantity?: number;
 };
 
 export type CardStatsDTO = {

@@ -62,6 +62,7 @@ const getCatalogData = async (
       flavorText: card.flavorText,
       tags: card.tags,
       quantity: card.collectionItem?.quantity ?? 0,
+      holoQuantity: card.collectionItem?.holoQuantity ?? 0,
     }));
 
     return {

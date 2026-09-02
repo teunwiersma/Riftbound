@@ -3,9 +3,10 @@
   cursor: pointer;
   transition: transform 0.15s;
   width: 100%;
-  background-color: #1e1e1e;
-  border: 1px solid #000000;
-  border-radius: 8px;
+  background-color: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  color: var(--ink);
 
   /* 
    * Catalog gap is 16px: 
@@ -41,17 +42,29 @@
   position: relative;
   width: 100%;
   aspect-ratio: 3 / 4;
+  background-color: var(--paper);
 }
 
 .box {
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  border-radius: 8px;
+  border-radius: 3px 3px 0 0;
+  color: inherit;
+  text-decoration: none;
+}
+
+.name {
+  margin: 0;
+  padding: 8px;
+  border-top: 1px solid var(--line);
+  font-size: 0.95rem;
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: 0;
 }
 
 .collectionCounterControls {
   display: flex;
-  justify-content: flex-end;
-  padding: 8px;
+  padding: 0 8px 8px;
 }

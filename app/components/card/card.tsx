@@ -8,7 +8,9 @@ import style from "./card.module.css";
 import { CardDTO } from "@/api/types";
 import AddToCollectionButton from "../button/addToCollectionButton";
 import {
+  addHoloToCollection,
   addToCollection,
+  removeHoloFromCollection,
   removeFromCollection,
 } from "@/api/data/collectionActions";
 
@@ -29,13 +31,18 @@ export default function Card({ data }: Props) {
             loading="eager"
           />
         </div>
+        <h2 className={style.name}>{data.name}</h2>
       </Link>
 
       <div className={style.collectionCounterControls}>
         <AddToCollectionButton
-          addToCollection={() => addToCollection(data.id)}
-          removeFromCollection={() => removeFromCollection(data.id)}
+          cardId={data.id}
+          addToCollection={addToCollection}
+          removeFromCollection={removeFromCollection}
           initialQuantity={data.quantity ?? 0}
+          addHoloToCollection={addHoloToCollection}
+          removeHoloFromCollection={removeHoloFromCollection}
+          initialHoloQuantity={data.holoQuantity ?? 0}
         />
       </div>
     </div>

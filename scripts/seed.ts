@@ -37,7 +37,7 @@ async function main() {
   const [existingCards, collectionItems] = await Promise.all([
     prisma.card.findMany({ select: { id: true, fullImage: true } }),
     prisma.collectionCard.findMany({
-      select: { id: true, cardId: true, quantity: true },
+      select: { id: true, cardId: true, quantity: true, holoQuantity: true },
     }),
   ]);
   const cachedImages = new Map(
@@ -115,6 +115,7 @@ async function main() {
         id: item.id,
         cardId: item.cardId,
         quantity: item.quantity,
+        holoQuantity: item.holoQuantity,
       })),
   });
 }

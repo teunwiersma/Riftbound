@@ -28,7 +28,7 @@ const getCollectionData = async (
     },
   });
 
-  return collection.map(({ card, quantity }) => ({
+  return collection.map(({ card, quantity, holoQuantity }) => ({
     id: card.id,
     collectorNumber: card.collectorNumber,
     set: card.setId,
@@ -53,5 +53,6 @@ const getCollectionData = async (
     flavorText: card.flavorText,
     tags: card.tags,
     quantity,
+    holoQuantity,
   }));
 };

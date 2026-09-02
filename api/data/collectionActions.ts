@@ -20,7 +20,11 @@ export async function removeFromCollection(cardId: string) {
     where: { cardId },
   });
 
-  if (!existing || existing.quantity <= 1) {
+  if (!existing || existing.quantity === 0) {
+    return 0;
+  }
+
+  if (existing.quantity <= 1 && existing.holoQuantity === 0) {
     await prisma.collectionCard.deleteMany({ where: { cardId } });
     revalidatePath(`/cards/${cardId}`);
     return 0;
@@ -34,4 +38,41 @@ export async function removeFromCollection(cardId: string) {
   revalidatePath(`/cards/${cardId}`);
 
   return updated.quantity;
+}
+
+export async function addHoloToCollection(cardId: string) {
+  const updated = await prisma.collectionCard.upsert({
+    where: { cardId },
+    update: { holoQuantity: { increment: 1 } },
+    create: { cardId, holoQuantity: 1 },
+  });
+
+  revalidatePath(`/cards/${cardId}`);
+
+  return updated.holoQuantity;
+}
+
+export async function removeHoloFromCollection(cardId: string) {
+  const existing = await prisma.collectionCard.findUnique({
+    where: { cardId },
+  });
+
+  if (!existing || existing.holoQuantity === 0) {
+    return 0;
+  }
+
+  if (existing.holoQuantity <= 1 && existing.quantity === 0) {
+    await prisma.collectionCard.deleteMany({ where: { cardId } });
+    revalidatePath(`/cards/${cardId}`);
+    return 0;
+  }
+
+  const updated = await prisma.collectionCard.update({
+    where: { cardId },
+    data: { holoQuantity: { decrement: 1 } },
+  });
+
+  revalidatePath(`/cards/${cardId}`);
+
+  return updated.holoQuantity;
 }

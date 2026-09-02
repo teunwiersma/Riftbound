@@ -1,7 +1,12 @@
 import Image from "next/image";
 import { notFound } from "next/navigation";
-import { revalidatePath } from "next/cache";
 import prisma from "@/api/data/prisma";
+import {
+  addHoloToCollection,
+  addToCollection,
+  removeHoloFromCollection,
+  removeFromCollection,
+} from "@/api/data/collectionActions";
 import styles from "./card.module.css";
 import AddToCollectionButton from "../../../components/button/addToCollectionButton";
 
@@ -24,51 +29,19 @@ export default async function CardDetails({ params }: CardDetailsProps) {
     where: { cardId: id },
   });
 
-  async function addToCollection() {
-    "use server";
-
-    const updated = await prisma.collectionCard.upsert({
-      where: { cardId: id },
-      update: { quantity: { increment: 1 } },
-      create: { cardId: id, quantity: 1 },
-    });
-
-    revalidatePath(`/cards/${id}`);
-
-    return updated.quantity;
-  }
-
-  async function removeFromCollection() {
-    "use server";
-    const existing = await prisma.collectionCard.findUnique({
-      where: { cardId: id },
-    });
-
-    if (!existing || existing.quantity <= 1) {
-      await prisma.collectionCard.deleteMany({ where: { cardId: id } });
-      revalidatePath(`/cards/${id}`);
-      return 0;
-    }
-
-    const updated = await prisma.collectionCard.update({
-      where: { cardId: id },
-      data: { quantity: { decrement: 1 } },
-    });
-
-    revalidatePath(`/cards/${id}`);
-
-    return updated.quantity;
-  }
-
   return (
     <div className={styles.cardDetails}>
       <div>
         <div className={styles.header}>
           <h1>{card.name}</h1>
           <AddToCollectionButton
+            cardId={id}
             addToCollection={addToCollection}
             removeFromCollection={removeFromCollection}
             initialQuantity={collectionItem?.quantity ?? 0}
+            addHoloToCollection={addHoloToCollection}
+            removeHoloFromCollection={removeHoloFromCollection}
+            initialHoloQuantity={collectionItem?.holoQuantity ?? 0}
           />
         </div>
         <div className={styles.content}>
