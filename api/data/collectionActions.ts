@@ -3,6 +3,13 @@
 import { revalidatePath } from "next/cache";
 import prisma from "./prisma";
 
+export interface CollectionActions {
+  addToCollection(cardId: string): Promise<number>;
+  removeFromCollection(cardId: string): Promise<number>;
+  addHoloToCollection(cardId: string): Promise<number>;
+  removeHoloFromCollection(cardId: string): Promise<number>;
+}
+
 export async function addToCollection(cardId: string) {
   const updated = await prisma.collectionCard.upsert({
     where: { cardId },

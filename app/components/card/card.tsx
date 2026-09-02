@@ -12,10 +12,18 @@ import {
   addToCollection,
   removeHoloFromCollection,
   removeFromCollection,
+  type CollectionActions,
 } from "@/api/data/collectionActions";
 
 type Props = {
   data: CardDTO;
+};
+
+const collectionActions: CollectionActions = {
+  addToCollection,
+  removeFromCollection,
+  addHoloToCollection,
+  removeHoloFromCollection,
 };
 
 export default function Card({ data }: Props) {
@@ -41,11 +49,8 @@ export default function Card({ data }: Props) {
       <div className={style.collectionCounterControls}>
         <AddToCollectionButton
           cardId={data.id}
-          addToCollection={addToCollection}
-          removeFromCollection={removeFromCollection}
+          actions={collectionActions}
           initialQuantity={data.quantity ?? 0}
-          addHoloToCollection={addHoloToCollection}
-          removeHoloFromCollection={removeHoloFromCollection}
           initialHoloQuantity={data.holoQuantity ?? 0}
         />
       </div>

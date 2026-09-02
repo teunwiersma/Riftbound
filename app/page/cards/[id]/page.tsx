@@ -6,12 +6,20 @@ import {
   addToCollection,
   removeHoloFromCollection,
   removeFromCollection,
+  type CollectionActions,
 } from "@/api/data/collectionActions";
 import styles from "./card.module.css";
 import AddToCollectionButton from "../../../components/button/addToCollectionButton";
 
 type CardDetailsProps = {
   params: Promise<{ id: string }>;
+};
+
+const collectionActions: CollectionActions = {
+  addToCollection,
+  removeFromCollection,
+  addHoloToCollection,
+  removeHoloFromCollection,
 };
 
 export default async function CardDetails({ params }: CardDetailsProps) {
@@ -36,11 +44,8 @@ export default async function CardDetails({ params }: CardDetailsProps) {
           <h1>{card.name}</h1>
           <AddToCollectionButton
             cardId={id}
-            addToCollection={addToCollection}
-            removeFromCollection={removeFromCollection}
+            actions={collectionActions}
             initialQuantity={collectionItem?.quantity ?? 0}
-            addHoloToCollection={addHoloToCollection}
-            removeHoloFromCollection={removeHoloFromCollection}
             initialHoloQuantity={collectionItem?.holoQuantity ?? 0}
           />
         </div>
