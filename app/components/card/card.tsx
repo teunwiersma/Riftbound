@@ -27,7 +27,11 @@ export default function Card({ data }: Props) {
             alt={data.name}
             src={data.art.imageURL ?? data.art.thumbnailURL}
             fill={true}
-            sizes="(min-width: 425px) 188px, (min-width: 768px) 235px, 343px"
+            sizes="
+              (min-width: 1440px) 180px,
+              (min-width: 768px) 235px,
+              (min-width: 425px) 188px,
+              343px"
             loading="eager"
           />
         </div>
