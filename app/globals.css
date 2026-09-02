@@ -7,7 +7,9 @@
   --accent: #c84b2f;
   --accent-dark: #8b2e22;
   --gold: #d79c37;
-  --muted: #687672;
+  --collection: #2f6b54;
+  --collection-dark: #194735;
+  --collection-wash: #e4e8dd;
   color-scheme: light;
 
   /* defaults */
@@ -16,9 +18,9 @@
   /* nav */
   --nav-width-mobile: 140px;
   --nav-width-desktop: 240px;
-  --nav-sidebar-border: #d9e0d6;
-  --nav-text-color-hover: #194735;
-  --nav-text-background-color: #f8faf5;
+  --nav-sidebar-border: var(--line);
+  --nav-text-color-hover: var(--collection-dark);
+  --nav-text-background-color: var(--panel);
 }
 
 * {

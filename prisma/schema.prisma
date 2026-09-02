@@ -52,8 +52,22 @@ model Card {
   thumbnailURL   String
   fullURL        String
   // Cached image bytes, used instead of the URLs to avoid re-fetching from the source on every load.
-  fullImage      Bytes?
-  artist         String
+  fullImage    Bytes?
+  artist       String
+
+  // Relation to global collection
+  collectionItem CollectionCard?
 
   @@map("cards")
+}
+
+// Represents an owned card entry in the global collection.
+model CollectionCard {
+  id           String @id @default(uuid())
+  card         Card   @relation(fields: [cardId], references: [id], onDelete: Cascade)
+  cardId       String @unique
+  quantity     Int    @default(0)
+  holoQuantity Int    @default(0)
+
+  @@map("collection_cards")
 }

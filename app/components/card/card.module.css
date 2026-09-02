@@ -1,8 +1,12 @@
 .card {
   position: relative;
   cursor: pointer;
-  transition: transform .15s;
+  transition: transform 0.15s;
   width: 100%;
+  background-color: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  color: var(--ink);
 
   /* 
    * Catalog gap is 16px: 
@@ -19,6 +23,14 @@
   @media screen and (min-width: 1024px) {
     width: calc((100% - 48px) / 4);
   }
+
+  @media screen and (min-width: 1280px) {
+    width: calc((100% - 80px) / 6);
+  }
+
+  @media screen and (min-width: 1600px) {
+    width: calc((100% - 112px) / 8);
+  }
 }
 
 .card:hover {
@@ -30,4 +42,29 @@
   position: relative;
   width: 100%;
   aspect-ratio: 3 / 4;
+  background-color: var(--paper);
+}
+
+.box {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: 3px 3px 0 0;
+  color: inherit;
+  text-decoration: none;
+}
+
+.name {
+  margin: 0;
+  padding: 8px;
+  border-top: 1px solid var(--line);
+  font-size: 0.95rem;
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: 0;
+}
+
+.collectionCounterControls {
+  display: flex;
+  padding: 0 8px 8px;
 }

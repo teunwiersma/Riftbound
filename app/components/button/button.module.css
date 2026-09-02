@@ -1,0 +1,93 @@
+.counterButton {
+  display: grid;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  place-items: center;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  font-size: 1.1rem;
+  font-weight: 600;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.counterButton:hover {
+  background-color: var(--collection-wash);
+}
+
+.counterButton:active {
+  transform: scale(0.96);
+}
+
+.cardButton {
+  padding: 8px 20px;
+  background-color: var(--accent);
+  color: var(--panel);
+  border: none;
+  border-radius: 8px;
+  font-size: 1.25rem;
+  font-weight: 600;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.cardButton:hover {
+  background-color: var(--accent-dark);
+}
+
+.cardButton:active {
+  transform: scale(0.96);
+}
+.collectionControls {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.collectionCount {
+  min-width: 16px;
+  color: var(--collection);
+  font-size: 0.95rem;
+  font-weight: 800;
+  text-align: center;
+}
+
+.counterGroup {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.collectionRow {
+  display: grid;
+  width: 100%;
+  grid-template-columns: 1fr 22px 42px;
+  align-items: center;
+  min-height: 23px;
+  border-bottom: 1px solid var(--line);
+}
+
+.collectionRow:last-child {
+  border-bottom: 0;
+}
+
+.collectionLabel {
+  color: var(--muted);
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.holoRow .collectionLabel,
+.holoRow .collectionCount {
+  color: var(--gold);
+}
+
+.counterButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.35;
+}

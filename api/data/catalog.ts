@@ -1,7 +1,7 @@
 import prisma from "./prisma";
 import { CardDTO } from "../types";
 
-const DEFAULT_PAGE_SIZE = 12;
+export const DEFAULT_PAGE_SIZE = 50;
 
 export const catalogData = async (page = 1, pageSize = DEFAULT_PAGE_SIZE) => {
   const { data, error } = await getCatalogData(page, pageSize);
@@ -12,14 +12,15 @@ export const catalogData = async (page = 1, pageSize = DEFAULT_PAGE_SIZE) => {
   };
 };
 
-export type CatalogData = 
+export type CatalogData =
   | {
-    data: CardDTO[];
-    error: null
-  } | {
-    data: null;
-    error: unknown;
-  }
+      data: CardDTO[];
+      error: null;
+    }
+  | {
+      data: null;
+      error: unknown;
+    };
 
 const getCatalogData = async (
   page: number,
@@ -33,6 +34,7 @@ const getCatalogData = async (
       // blows up page size (fine for a single card, not for a list). Served via
       // a dedicated route instead, see app/api/cards/[id]/image/route.ts.
       omit: { fullImage: true },
+      include: { collectionItem: true },
     });
 
     const data = cards.map((card) => ({
@@ -59,16 +61,18 @@ const getCatalogData = async (
       },
       flavorText: card.flavorText,
       tags: card.tags,
+      quantity: card.collectionItem?.quantity ?? 0,
+      holoQuantity: card.collectionItem?.holoQuantity ?? 0,
     }));
 
     return {
       data,
-      error: null
-    }
+      error: null,
+    };
   } catch (error: unknown) {
     return {
       data: null,
-      error
-    }
+      error,
+    };
   }
 };

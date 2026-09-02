@@ -1,18 +1,21 @@
-import { catalogData } from "@/api/data/catalog";
-import Card from "../../components/card/card";
+import { catalogData, DEFAULT_PAGE_SIZE } from "@/api/data/catalog";
+import InfiniteCardGrid from "../../components/infiniteCardGrid/infiniteCardGrid";
 
 import style from "./catalog.module.css";
 
 export default async function CatalogPage() {
   const { data, error } = await catalogData();
 
+  if (error || !data) {
+    return <div className={style.catalog}>OwO, oewpsie~, ging iets fout</div>;
+  }
+
   return (
-    <div className={style.catalog}>
-      {
-        error ? 'OwO, oewpsie~, ging iets fout' :
-        data?.map((item, key) => (
-          <Card data={item} key={key} />))
-      }
-    </div>
+    <InfiniteCardGrid
+      initialData={data}
+      apiPath="/api/catalog"
+      pageSize={DEFAULT_PAGE_SIZE}
+      className={style.catalog}
+    />
   );
 }
