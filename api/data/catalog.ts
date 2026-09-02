@@ -1,3 +1,4 @@
+import Fuse from "fuse.js";
 import prisma from "./prisma";
 import { CardDTO } from "../types";
 import type { CardFilters } from "../types";
@@ -34,8 +35,9 @@ const getCatalogData = async (
 ): Promise<CatalogData> => {
   try {
     const cards = await prisma.card.findMany({
-      skip: (page - 1) * pageSize,
-      take: pageSize,
+      ...(filters.search
+        ? {}
+        : { skip: (page - 1) * pageSize, take: pageSize }),
       where: {
         ...(filters.set && { setId: filters.set }),
         ...(filters.rarity && { rarity: filters.rarity }),
@@ -49,7 +51,18 @@ const getCatalogData = async (
       include: { collectionItem: true },
     });
 
-    const data = cards.map((card) => ({
+    const filteredCards = filters.search
+      ? new Fuse(cards, {
+          keys: ["name", "collectorNumber", "description", "tags"],
+          threshold: 0.35,
+          ignoreLocation: true,
+        })
+          .search(filters.search)
+          .map(({ item }) => item)
+          .slice((page - 1) * pageSize, page * pageSize)
+      : cards;
+
+    const data = filteredCards.map((card) => ({
       id: card.id,
       collectorNumber: card.collectorNumber,
       set: card.setId,

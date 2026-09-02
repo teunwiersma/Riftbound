@@ -11,6 +11,7 @@ export async function GET(request: NextRequest) {
   const pageSize = pageSizeParam ? Number(pageSizeParam) : undefined;
 
   const filters = {
+    search: searchParams.get("search") ?? undefined,
     set: searchParams.get("set") ?? undefined,
     rarity: searchParams.get("rarity") ?? undefined,
     type: searchParams.get("type") ?? undefined,

@@ -44,6 +44,7 @@ export type CardArtDTO = {
 };
 
 export type CardFilters = {
+  search?: string;
   set?: string;
   rarity?: string;
   type?: string;

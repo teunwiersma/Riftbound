@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 import InfiniteCardGrid from "../infiniteCardGrid/infiniteCardGrid";
@@ -15,6 +16,7 @@ export type CardFilterOptions = {
 const runeTypes = ["fury", "calm", "mind", "chaos", "order", "body"];
 
 type Filters = {
+  search: string;
   set: string;
   rarity: string;
   type: string;
@@ -41,6 +43,7 @@ export default function CardFilters({
   const searchParams = useSearchParams();
 
   const filters: Filters = {
+    search: searchParams.get("search") ?? "",
     set: searchParams.get("set") ?? "",
     rarity: searchParams.get("rarity") ?? "",
     type: searchParams.get("type") ?? "",
@@ -48,6 +51,21 @@ export default function CardFilters({
   };
 
   const hasActiveFilters = Object.values(filters).some(Boolean);
+  const [searchValue, setSearchValue] = useState(filters.search);
+
+  useEffect(() => {
+    setSearchValue(filters.search);
+  }, [filters.search]);
+
+  useEffect(() => {
+    if (searchValue === filters.search) return;
+
+    const timeoutId = window.setTimeout(() => {
+      updateFilter("search", searchValue);
+    }, 300);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [filters.search, searchValue]);
 
   function updateFilter(name: keyof Filters, value: string) {
     const params = new URLSearchParams(searchParams.toString());
@@ -64,12 +82,22 @@ export default function CardFilters({
   }
 
   function resetFilters() {
+    setSearchValue("");
     router.replace(pathname, { scroll: false });
   }
 
   return (
     <div className={styles.browser}>
       <section className={styles.filters} aria-label="Card filters">
+        <label className={styles.searchField}>
+          <span>Search</span>
+          <input
+            type="search"
+            value={searchValue}
+            placeholder="Card name, code, or description text"
+            onChange={(event) => setSearchValue(event.target.value)}
+          />
+        </label>
         <div className={styles.runeFilters} aria-label="Rune type">
           {runeTypes.map((runeType) => {
             const isSelected = filters.runeType === runeType;
