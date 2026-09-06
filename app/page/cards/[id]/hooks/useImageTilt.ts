@@ -65,10 +65,9 @@ export function useImageTilt({
     }
   }, [imageRef, wrapperRef, shouldTrack, resetToDefaultOnLeave])
 
-  /** 
-   * The returned values are "inverted":
-   * When you hover over the image on the left, you want the "weight" of the pointer to push down.
-   * This means that when you hover on the left side, the right pushes up.
+  /**
+   * Return the tilt for each axis. Reverse the vertical tilt so the card
+   * moves as though the pointer is pressing down on it.
    */
   return {
     rotateY: pointerX,
