@@ -1,8 +1,8 @@
-.image {
-  transition: all .25s;
-  transform-style: preserve-3d;
+.detailImage {
+  perspective: 1000px;
 }
 
-.image:hover {
-  /* transform: translate3d(10px, 10px, 75px); */
+.image {
+  transition: all .1s;
+  transform-style: preserve-3d;
 }

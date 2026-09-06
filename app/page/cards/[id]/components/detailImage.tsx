@@ -2,9 +2,9 @@
 
 import Image from "next/image";
 import { useRef, useState } from "react";
-import { useMouseTracking } from "../hooks/useMouseTracking";
 
 import style from "./detailImage.module.css";
+import { useImageTilt } from "../hooks/useImageTilt";
 
 type Props = {
   src: string;
@@ -16,26 +16,28 @@ type Props = {
 
 export default function DetailImage(props: Props) {
   const [shouldTrack, setShouldTrack] = useState(false);
-  const imageRef = useRef(null);
+  const imageRef = useRef<HTMLImageElement>(null);
+  const wrapperRef = useRef<HTMLImageElement>(null);
 
-  const mouse = useMouseTracking({
-    ref: imageRef,
+  const { rotateY, rotateX } = useImageTilt({
+    image: imageRef,
+    wrapper: wrapperRef,
     shouldTrack,
   });
 
-  console.log(mouse?.mouseXPos, mouse?.mouseYPos);
-
   return (
-    // eslint-disable-next-line jsx-a11y/alt-text -- already has alt attribute attatched
-    <Image
-      {...props}
-      style={{
-        transform: `translate3d(${mouse?.mouseXPos ?? 0}, ${mouse?.mouseYPos ?? 0}, 75px)`,
-      }}
-      ref={imageRef}
-      onMouseEnter={() => setShouldTrack(true)}
-      onMouseLeave={() => setShouldTrack(false)}
-      className={style.image}
-    />
+    <div className={style.detailImage} ref={wrapperRef}>
+      {/* eslint-disable-next-line jsx-a11y/alt-text -- already has alt attribute attatched */}
+      <Image
+        {...props}
+        style={{
+          transform: `rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateZ(20px)`,
+        }}
+        ref={imageRef}
+        onPointerEnter={() => setShouldTrack(true)}
+        onPointerLeave={() => setShouldTrack(false)}
+        className={style.image}
+      />
+    </div>
   );
 }
