@@ -80,9 +80,5 @@
 }
 
 .battlefieldArt {
-  width: 133.333% !important;
-  height: 75% !important;
-  top: 12.5% !important;
-  left: -16.667% !important;
   transform: rotate(90deg);
 }

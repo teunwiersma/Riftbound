@@ -28,7 +28,7 @@
 
 .searchField input {
   width: 100%;
-  padding: 9px 11px;
+  padding: 8px 12px;
   color: var(--ink);
   background: var(--panel);
   border: 1px solid var(--line);
@@ -84,7 +84,7 @@
 .filterField select {
   width: 100%;
   min-width: 0;
-  padding: 7px 9px;
+  padding: 8px;
   color: var(--ink);
   background: var(--panel);
   border: 1px solid var(--line);

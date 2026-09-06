@@ -1,21 +1,22 @@
 import { CardFilterOptions } from "@/app/components/cardFilters/cardFilters";
+import { orderBy } from "@/api/types";
 import prisma from "./prisma";
 
 export async function cardFilterOptions(): Promise<CardFilterOptions> {
   const [sets, rarities, types] = await Promise.all([
     prisma.set.findMany({
       select: { id: true, name: true },
-      orderBy: { name: "asc" },
+      orderBy: { name: orderBy.ASC },
     }),
     prisma.card.findMany({
       distinct: ["rarity"],
       select: { rarity: true },
-      orderBy: { rarity: "asc" },
+      orderBy: { rarity: orderBy.ASC },
     }),
     prisma.card.findMany({
       distinct: ["type"],
       select: { type: true },
-      orderBy: { type: "asc" },
+      orderBy: { type: orderBy.ASC },
     }),
   ]);
 

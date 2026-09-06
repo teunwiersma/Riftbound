@@ -50,3 +50,10 @@ export type CardFilters = {
   type?: string;
   runeType?: string;
 };
+
+export const orderBy = {
+  ASC: "asc",
+  DESC: "desc",
+} as const;
+
+export type OrderBy = (typeof orderBy)[keyof typeof orderBy];

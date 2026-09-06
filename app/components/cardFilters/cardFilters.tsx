@@ -1,10 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 import InfiniteCardGrid from "../infiniteCardGrid/infiniteCardGrid";
 import { CardDTO } from "@/api/types";
+import { getCardFilters, type CardFilterValues } from "@/api/filterQueries";
+import SearchField from "./searchField";
 import styles from "./cardFilters.module.css";
 
 export type CardFilterOptions = {
@@ -14,14 +16,6 @@ export type CardFilterOptions = {
 };
 
 const runeTypes = ["fury", "calm", "mind", "chaos", "order", "body"];
-
-type Filters = {
-  search: string;
-  set: string;
-  rarity: string;
-  type: string;
-  runeType: string;
-};
 
 type CardFiltersProps = {
   initialData: CardDTO[];
@@ -42,62 +36,41 @@ export default function CardFilters({
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const filters: Filters = {
-    search: searchParams.get("search") ?? "",
-    set: searchParams.get("set") ?? "",
-    rarity: searchParams.get("rarity") ?? "",
-    type: searchParams.get("type") ?? "",
-    runeType: searchParams.get("runeType") ?? "",
-  };
+  const filters: CardFilterValues = getCardFilters(searchParams);
+  const [searchFieldKey, setSearchFieldKey] = useState(0);
 
   const hasActiveFilters = Object.values(filters).some(Boolean);
-  const [searchValue, setSearchValue] = useState(filters.search);
 
-  useEffect(() => {
-    setSearchValue(filters.search);
-  }, [filters.search]);
+  const updateFilter = useCallback(
+    (name: keyof CardFilterValues, value: string) => {
+      const params = new URLSearchParams(searchParams.toString());
 
-  useEffect(() => {
-    if (searchValue === filters.search) return;
+      if (value) {
+        params.set(name, value);
+      } else {
+        params.delete(name);
+      }
 
-    const timeoutId = window.setTimeout(() => {
-      updateFilter("search", searchValue);
-    }, 300);
-
-    return () => window.clearTimeout(timeoutId);
-  }, [filters.search, searchValue]);
-
-  function updateFilter(name: keyof Filters, value: string) {
-    const params = new URLSearchParams(searchParams.toString());
-
-    if (value) {
-      params.set(name, value);
-    } else {
-      params.delete(name);
-    }
-
-    router.replace(`${pathname}${params.size ? `?${params}` : ""}`, {
-      scroll: false,
-    });
-  }
+      router.replace(`${pathname}${params.size ? `?${params}` : ""}`, {
+        scroll: false,
+      });
+    },
+    [pathname, router, searchParams],
+  );
 
   function resetFilters() {
-    setSearchValue("");
+    setSearchFieldKey((key) => key + 1);
     router.replace(pathname, { scroll: false });
   }
 
   return (
     <div className={styles.browser}>
       <section className={styles.filters} aria-label="Card filters">
-        <label className={styles.searchField}>
-          <span>Search</span>
-          <input
-            type="search"
-            value={searchValue}
-            placeholder="Card name, code, or description text"
-            onChange={(event) => setSearchValue(event.target.value)}
-          />
-        </label>
+        <SearchField
+          key={searchFieldKey}
+          value={filters.search}
+          onChange={(value) => updateFilter("search", value)}
+        />
         <div className={styles.runeFilters} aria-label="Rune type">
           {runeTypes.map((runeType) => {
             const isSelected = filters.runeType === runeType;

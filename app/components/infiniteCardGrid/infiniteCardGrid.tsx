@@ -2,7 +2,8 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { CardDTO } from "@/api/types";
+import { getFilterQuery } from "@/api/filterQueries";
+import { CardDTO, CardFilters } from "@/api/types";
 import Card from "../card/card";
 
 type Props = {
@@ -10,7 +11,7 @@ type Props = {
   apiPath: string;
   pageSize: number;
   className: string;
-  filters?: Record<string, string>;
+  filters?: CardFilters;
 };
 
 export default function InfiniteCardGrid({
@@ -26,9 +27,7 @@ export default function InfiniteCardGrid({
   const [isLoading, setIsLoading] = useState(false);
   const sentinelRef = useRef<HTMLDivElement>(null);
 
-  const filterQuery = new URLSearchParams(
-    Object.entries(filters).filter(([, value]) => value),
-  ).toString();
+  const filterQuery = getFilterQuery(filters);
 
   useEffect(() => {
     const controller = new AbortController();
