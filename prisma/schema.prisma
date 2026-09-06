@@ -57,6 +57,7 @@ model Card {
 
   // Relation to global collection
   collectionItem CollectionCard?
+  deckCards      DeckCard[]
 
   @@map("cards")
 }
@@ -70,4 +71,46 @@ model CollectionCard {
   holoQuantity Int    @default(0)
 
   @@map("collection_cards")
+}
+
+// A named deck and its current playable card list.
+model Deck {
+  id           String        @id @default(uuid())
+  name         String
+  champion     String        @default("")
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  cards        DeckCard[]
+  versions     DeckVersion[]
+
+  @@map("decks")
+}
+
+// A card quantity in one of the deck builder's zones.
+model DeckCard {
+  deck      Deck  @relation(fields: [deckId], references: [id], onDelete: Cascade)
+  deckId    String
+  card      Card  @relation(fields: [cardId], references: [id], onDelete: Cascade)
+  cardId    String
+  zone      String
+  quantity  Int   @default(1)
+
+  @@id([deckId, cardId, zone])
+  @@index([cardId])
+  @@map("deck_cards")
+}
+
+// Immutable deck snapshots used for version history.
+model DeckVersion {
+  id        String   @id @default(uuid())
+  deck      Deck     @relation(fields: [deckId], references: [id], onDelete: Cascade)
+  deckId    String
+  number    Int
+  setCode   String   @default("OGN")
+  snapshot  Json
+  savedAt   DateTime @default(now())
+
+  @@unique([deckId, number])
+  @@index([deckId, savedAt])
+  @@map("deck_versions")
 }

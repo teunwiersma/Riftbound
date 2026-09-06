@@ -130,3 +130,68 @@
     align-self: start;
   }
 }
+
+.compact {
+  gap: 10px;
+}
+
+.compact .filters {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+  padding: 0;
+  background: transparent;
+  border: 0;
+}
+
+.compact .searchField {
+  width: 100%;
+  min-width: 0;
+  flex-basis: auto;
+  gap: 3px;
+  font-size: 10px;
+}
+
+.compact .searchField input {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  height: 28px;
+  padding: 4px 7px;
+  font-size: 11px;
+}
+
+.compact .filterGrid {
+  min-width: 0;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 5px;
+  width: 100%;
+  margin-top: 1px;
+}
+
+.compact .filterField {
+  gap: 3px;
+  font-size: 9px;
+}
+
+.compact .filterField select {
+  padding: 5px 3px;
+  font-size: 11px;
+}
+
+.compact .runeFilters {
+  flex-wrap: nowrap;
+  gap: 3px;
+}
+
+.compact .runeButton {
+  width: 28px;
+  height: 28px;
+  padding: 4px;
+}
+
+.compact .resetButton {
+  padding: 6px 9px;
+  font-size: 12px;
+}
