@@ -38,6 +38,7 @@
     border-color 0.25s;
 }
 
+.navigation a.active,
 .navigation a:hover {
   color: var(--nav-text-color-hover);
   background-color: var(--nav-text-background-color);
