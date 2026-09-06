@@ -27,11 +27,14 @@ const collectionActions: CollectionActions = {
 };
 
 export default function Card({ data }: Props) {
+  const isBattlefield = data.type.includes("battlefield");
+
   return (
     <div className={style.card}>
       <Link className={style.box} href={`../page/cards/${data.id}`}>
         <div className={style.image}>
           <Image
+            className={isBattlefield ? style.battlefieldArt : undefined}
             alt={data.name}
             src={data.art.imageURL ?? data.art.thumbnailURL}
             fill={true}

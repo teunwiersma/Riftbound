@@ -1,13 +1,15 @@
+import Fuse from "fuse.js";
 import prisma from "./prisma";
 import { CardDTO } from "../types";
-
+import type { CardFilters } from "../types";
 export const DEFAULT_PAGE_SIZE = 50;
 
 export const collectionData = async (
   page = 1,
   pageSize = DEFAULT_PAGE_SIZE,
+  filters: CardFilters = {},
 ) => {
-  const data = await getCollectionData(page, pageSize);
+  const data = await getCollectionData(page, pageSize, filters);
 
   return {
     data,
@@ -19,16 +21,40 @@ export const collectionData = async (
 const getCollectionData = async (
   page: number,
   pageSize: number,
+  filters: CardFilters,
 ): Promise<CardDTO[]> => {
   const collection = await prisma.collectionCard.findMany({
-    skip: (page - 1) * pageSize,
-    take: pageSize,
+    ...(filters.search ? {} : { skip: (page - 1) * pageSize, take: pageSize }),
+    where: {
+      card: {
+        ...(filters.set && { setId: filters.set }),
+        ...(filters.rarity && { rarity: filters.rarity }),
+        ...(filters.type && { type: filters.type }),
+        ...(filters.runeType && { faction: filters.runeType }),
+      },
+    },
     include: {
       card: true,
     },
   });
 
-  return collection.map(({ card, quantity, holoQuantity }) => ({
+  const filteredCollection = filters.search
+    ? new Fuse(collection, {
+        keys: [
+          "card.name",
+          "card.collectorNumber",
+          "card.description",
+          "card.tags",
+        ],
+        threshold: 0.35,
+        ignoreLocation: true,
+      })
+        .search(filters.search)
+        .map(({ item }) => item)
+        .slice((page - 1) * pageSize, page * pageSize)
+    : collection;
+
+  return filteredCollection.map(({ card, quantity, holoQuantity }) => ({
     id: card.id,
     collectorNumber: card.collectorNumber,
     set: card.setId,

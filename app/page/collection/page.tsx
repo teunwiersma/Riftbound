@@ -1,23 +1,26 @@
-import {
-  collectionData,
-  DEFAULT_PAGE_SIZE,
-} from "../../../api/data/collection";
-import InfiniteCardGrid from "../../components/infiniteCardGrid/infiniteCardGrid";
+import { cardFilterOptions } from "@/api/data/cardFilter";
+import { DEFAULT_PAGE_SIZE } from "../../../api/data/catalog";
+import { collectionData } from "../../../api/data/collection";
+import CardFilters from "../../components/cardFilters/cardFilters";
 import style from "./collection.module.css";
 
 export default async function CollectionPage() {
-  const { data } = await collectionData();
+  const [{ data }, options] = await Promise.all([
+    collectionData(),
+    cardFilterOptions(),
+  ]);
 
   return (
     <div className={style.collectionPage}>
       <main>
         <div>
           <h1>Our BundaRuft collection</h1>
-          <InfiniteCardGrid
+          <CardFilters
             initialData={data}
             apiPath="/api/collection"
             pageSize={DEFAULT_PAGE_SIZE}
             className={style.collection}
+            options={options}
           />
         </div>
       </main>

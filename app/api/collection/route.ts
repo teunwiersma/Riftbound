@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { collectionData } from "@/api/data/collection";
+import { getCardFilters } from "@/api/filterQueries";
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -10,7 +11,9 @@ export async function GET(request: NextRequest) {
   const page = pageParam ? Number(pageParam) : undefined;
   const pageSize = pageSizeParam ? Number(pageSizeParam) : undefined;
 
-  const { data } = await collectionData(page, pageSize);
+  const filters = getCardFilters(searchParams);
+
+  const { data } = await collectionData(page, pageSize, filters);
 
   return NextResponse.json({ data });
 }

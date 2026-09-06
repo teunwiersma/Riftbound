@@ -1,8 +1,12 @@
 .catalog {
+  width: 100%;
   gap: 16px;
-  padding: 16px;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
   margin: 0 auto;
+}
+
+.catalogPage {
+  padding: 16px;
 }

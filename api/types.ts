@@ -42,3 +42,18 @@ export type CardArtDTO = {
   imageURL?: string;
   artist: string;
 };
+
+export type CardFilters = {
+  search?: string;
+  set?: string;
+  rarity?: string;
+  type?: string;
+  runeType?: string;
+};
+
+export const orderBy = {
+  ASC: "asc",
+  DESC: "desc",
+} as const;
+
+export type OrderBy = (typeof orderBy)[keyof typeof orderBy];
