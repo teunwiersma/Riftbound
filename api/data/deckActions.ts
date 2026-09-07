@@ -110,7 +110,8 @@ export async function saveDeckVersion(
   champion: string,
   cards: DeckCardInput[],
 ) {
-  await assertValidDeck(deckId, name, champion, cards, true);
+  if (!name.trim()) throw new Error("A deck name is required.");
+  await assertValidDeck(deckId, name, champion, cards, false);
 
   const latest = await prisma.deckVersion.findFirst({
     where: { deckId },

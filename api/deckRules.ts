@@ -209,8 +209,8 @@ export function validateDeck(
 
   if (requireComplete && (total("legend") !== 1 || !legend))
     errors.push("A deck must have exactly one Legend.");
-  if (requireComplete && total("main") < 40)
-    errors.push("The main deck must contain at least 40 cards.");
+  if (requireComplete && total("main") < 39)
+    errors.push("The main deck must contain at least 39 cards.");
   if (requireComplete && total("runes") !== 12)
     errors.push("A deck must contain exactly 12 Runes.");
   if (requireComplete && total("battlefields") !== 3)

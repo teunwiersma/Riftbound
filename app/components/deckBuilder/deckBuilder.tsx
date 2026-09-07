@@ -22,12 +22,14 @@ import {
   legendDomains,
   zoneTotal,
   basicRuneForDomain,
+  validateDeck,
 } from "@/api/deckRules";
 import styles from "./deckBuilder.module.css";
 
 type Props = { initialDecks: DeckData[]; cards: DeckCardData[] };
 
 const normalize = (value: string) => value.toLowerCase().trim();
+
 const emptyDeck = (id: string, name: string): DeckData => ({
   id,
   name,
@@ -43,8 +45,13 @@ export default function DeckBuilder({ initialDecks, cards }: Props) {
   const [activeId, setActiveId] = useState(initialDecks[0]?.id ?? null);
   const [query, setQuery] = useState("");
   const [zoneId, setZoneId] = useState<DeckZoneId>("main");
+  const [draggedCard, setDraggedCard] = useState<{
+    cardId: string;
+    zone: DeckZoneId;
+  } | null>(null);
   const [isPending, startTransition] = useTransition();
   const active = decks.find((deck) => deck.id === activeId) ?? null;
+  const versionErrors = active ? validateDeck(active, cards, true) : [];
 
   function replaceActive(next: DeckData) {
     setDecks((current) =>
@@ -79,8 +86,10 @@ export default function DeckBuilder({ initialDecks, cards }: Props) {
           await updateDeck(deck.id, deck.name, deck.champion, deck.cards);
           toast.success("Deck updated.");
         }
-      } catch {
-        toast.error("Could not save deck.");
+      } catch (error) {
+        toast.error(
+          error instanceof Error ? error.message : "Could not save deck.",
+        );
       }
     });
   }
@@ -111,11 +120,20 @@ export default function DeckBuilder({ initialDecks, cards }: Props) {
     if (delta > 0 && targetZone === "runes" && !isLegendRune(active, card))
       return false;
     const nextQuantity = Math.max(0, current + delta);
-    const nextCards = active.cards.filter(
-      (item) => !(item.cardId === cardId && item.zone === targetZone),
+    const cardIndex = active.cards.findIndex(
+      (item) => item.cardId === cardId && item.zone === targetZone,
     );
-    if (nextQuantity)
+    let nextCards = active.cards;
+    if (cardIndex >= 0 && nextQuantity) {
+      nextCards = active.cards.map((item, index) =>
+        index === cardIndex ? { ...item, quantity: nextQuantity } : item,
+      );
+    } else if (cardIndex >= 0) {
+      nextCards = active.cards.filter((_, index) => index !== cardIndex);
+    } else if (nextQuantity) {
+      nextCards = [...active.cards];
       nextCards.push({ cardId, zone: targetZone, quantity: nextQuantity });
+    }
     if (delta > 0 && targetZone === "legend") {
       for (const domain of legendDomains(card)) {
         const rune = basicRuneForDomain(cards, domain);
@@ -273,11 +291,21 @@ export default function DeckBuilder({ initialDecks, cards }: Props) {
                     className={styles.primary}
                     type="button"
                     onClick={() => persist(active, true)}
-                    disabled={isPending}
+                    disabled={isPending || !active.name.trim()}
                   >
                     Save version
                   </button>
                 </div>
+                {versionErrors.length > 0 && (
+                  <p className={styles.validationError}>
+                    {versionErrors.join(" ")}
+                  </p>
+                )}
+                {!versionErrors.length && (
+                  <p className={styles.validationSuccess}>
+                    This deck is legal and ready to save.
+                  </p>
+                )}
                 <label className={styles.champion}>
                   <span>Legend / champion</span>
                   <input
@@ -301,6 +329,15 @@ export default function DeckBuilder({ initialDecks, cards }: Props) {
                         setZoneId(zone.id);
                         changeCardFor(zone.id, cardId, delta);
                       }}
+                      onDrop={(cardId, sourceZone, targetZone) => {
+                        moveCard(cardId, sourceZone, targetZone);
+                        setDraggedCard(null);
+                      }}
+                      onDragStart={(cardId, sourceZone) =>
+                        setDraggedCard({ cardId, zone: sourceZone })
+                      }
+                      onDragEnd={() => setDraggedCard(null)}
+                      draggedCard={draggedCard}
                     />
                   ))}
                 </section>
@@ -357,6 +394,52 @@ export default function DeckBuilder({ initialDecks, cards }: Props) {
       if (zone === "champion") setZoneId("main");
     }
   }
+
+  function moveCard(
+    cardId: string,
+    sourceZone: DeckZoneId,
+    targetZone: DeckZoneId,
+  ) {
+    if (!active || sourceZone === targetZone) return false;
+    const card = cards.find((item) => item.id === cardId);
+    const source = active.cards.find(
+      (item) => item.cardId === cardId && item.zone === sourceZone,
+    );
+    if (!card || !source) return false;
+
+    const withoutSource = {
+      ...active,
+      cards: active.cards.filter(
+        (item) => !(item.cardId === cardId && item.zone === sourceZone),
+      ),
+    };
+    const target = withoutSource.cards.find(
+      (item) => item.cardId === cardId && item.zone === targetZone,
+    );
+    if (!canAddCard(withoutSource, card, targetZone, cards)) return false;
+    if (
+      target &&
+      (target.quantity + source.quantity > 3 ||
+        ["legend", "champion", "battlefields"].includes(targetZone))
+    )
+      return false;
+
+    const nextCards = target
+      ? withoutSource.cards.map((item) =>
+          item === target
+            ? { ...item, quantity: item.quantity + source.quantity }
+            : item,
+        )
+      : [...withoutSource.cards, { ...source, zone: targetZone }];
+    const next = {
+      ...active,
+      cards: nextCards,
+      updatedAt: new Date().toISOString(),
+    };
+    replaceActive(next);
+    persist(next);
+    return true;
+  }
 }
 
 function toCardDTO(card: DeckCardData): CardDTO {
@@ -394,11 +477,23 @@ function DeckZone({
   deck,
   cards,
   onChange,
+  onDrop,
+  onDragStart,
+  onDragEnd,
+  draggedCard,
 }: {
   zone: (typeof DECK_ZONES)[number];
   deck: DeckData;
   cards: DeckCardData[];
   onChange: (cardId: string, delta: number) => void;
+  onDrop: (
+    cardId: string,
+    sourceZone: DeckZoneId,
+    targetZone: DeckZoneId,
+  ) => void;
+  onDragStart: (cardId: string, zone: DeckZoneId) => void;
+  onDragEnd: () => void;
+  draggedCard: { cardId: string; zone: DeckZoneId } | null;
 }) {
   const rows = deck.cards.filter((item) => item.zone === zone.id);
   const zoneClass =
@@ -414,7 +509,20 @@ function DeckZone({
               ? styles.zoneRunes
               : styles.zoneSideboard;
   return (
-    <section className={`${styles.zone} ${zoneClass}`}>
+    <section
+      className={`${styles.zone} ${zoneClass}`}
+      onDragOver={(event) => event.preventDefault()}
+      onDrop={(event) => {
+        event.preventDefault();
+        const payload = event.dataTransfer.getData(
+          "application/riftbound-card",
+        );
+        if (!payload) return;
+        const [cardId, sourceZone] = payload.split(":");
+        if (cardId && sourceZone)
+          onDrop(cardId, sourceZone as DeckZoneId, zone.id);
+      }}
+    >
       <div className={styles.zoneHeader}>
         <h2>{zone.label}</h2>
         <span>
@@ -432,34 +540,53 @@ function DeckZone({
               "battlefields",
             ].includes(zone.id);
             return (
-              <Card
+              <div
                 key={row.cardId}
-                data={toCardDTO(card)}
-                className={styles.deckCard}
-                controls={
-                  <div className={styles.deckControls}>
-                    {canAdjustQuantity && (
-                      <button
-                        type="button"
-                        onClick={() => onChange(row.cardId, -1)}
-                        aria-label={`Remove one ${card.name}`}
-                      >
-                        -
-                      </button>
-                    )}
-                    <output>{row.quantity}</output>
-                    {canAdjustQuantity && (
-                      <button
-                        type="button"
-                        onClick={() => onChange(row.cardId, 1)}
-                        aria-label={`Add one ${card.name}`}
-                      >
-                        +
-                      </button>
-                    )}
-                  </div>
-                }
-              />
+                className={`${styles.draggableCard} ${
+                  draggedCard?.cardId === row.cardId &&
+                  draggedCard.zone === zone.id
+                    ? styles.isDragging
+                    : ""
+                }`}
+                draggable
+                onDragStart={(event) => {
+                  event.dataTransfer.effectAllowed = "move";
+                  event.dataTransfer.setData(
+                    "application/riftbound-card",
+                    `${row.cardId}:${zone.id}`,
+                  );
+                  onDragStart(row.cardId, zone.id);
+                }}
+                onDragEnd={onDragEnd}
+              >
+                <Card
+                  data={toCardDTO(card)}
+                  className={styles.deckCard}
+                  controls={
+                    <div className={styles.deckControls}>
+                      {canAdjustQuantity && (
+                        <button
+                          type="button"
+                          onClick={() => onChange(row.cardId, -1)}
+                          aria-label={`Remove one ${card.name}`}
+                        >
+                          -
+                        </button>
+                      )}
+                      <output>{row.quantity}</output>
+                      {canAdjustQuantity && (
+                        <button
+                          type="button"
+                          onClick={() => onChange(row.cardId, 1)}
+                          aria-label={`Add one ${card.name}`}
+                        >
+                          +
+                        </button>
+                      )}
+                    </div>
+                  }
+                />
+              </div>
             );
           })}
         </div>

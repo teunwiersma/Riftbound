@@ -163,10 +163,22 @@
   font-weight: 800;
   text-transform: uppercase;
 }
+.validationError {
+  margin: 12px 0 0;
+  color: var(--danger, #a33a2b);
+  font-size: 13px;
+  font-weight: 700;
+}
+.validationSuccess {
+  margin: 12px 0 0;
+  color: var(--accent-dark);
+  font-size: 13px;
+  font-weight: 700;
+}
 .zones {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
+  grid-template-columns: 180px 180px minmax(0, 1fr);
+  gap: 16px;
 }
 .zone {
   min-width: 0;
@@ -200,40 +212,57 @@
 .zoneLegend .cardGrid,
 .zoneChampion .cardGrid,
 .zoneBattlefields .cardGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(132px, 1fr));
+  display: flex;
+  flex-flow: row wrap;
+  gap: 12px;
   align-items: start;
 }
 .zoneLegend .cardGrid > *,
 .zoneChampion .cardGrid > *,
 .zoneBattlefields .cardGrid > * {
-  width: 100%;
+  flex: 0 1 180px;
 }
-.zoneLegend .cardGrid,
-.zoneChampion .cardGrid {
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+.zoneBattlefields .cardGrid {
+  flex-wrap: nowrap;
 }
 .zoneMain .cardGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  display: flex;
+  flex-flow: row wrap;
+  gap: 12px;
   align-items: start;
 }
 .zoneMain .cardGrid > * {
-  width: 100%;
+  flex: 0 1 180px;
 }
 .zoneRunes .cardGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  display: flex;
+  flex-flow: row wrap;
+  gap: 12px;
   align-items: start;
 }
 .zoneRunes .cardGrid > * {
-  width: 100%;
+  flex: 0 1 180px;
 }
 .deckCard h2 {
   display: none;
 }
 .deckCard {
   background-color: var(--collection-wash);
+}
+.draggableCard {
+  flex: 0 0 180px;
+  width: 180px;
+  min-width: 0;
+  cursor: grab;
+}
+.draggableCard .deckCard {
+  width: 100%;
+}
+.draggableCard:active {
+  cursor: grabbing;
+}
+.isDragging {
+  opacity: 0.45;
 }
 .zoneHeader h2,
 .history h2 {
@@ -386,16 +415,28 @@
   font-size: 12px;
   font-weight: 800;
 }
-@media (max-width: 900px) {
-  .layout,
-  .workspace {
+@media (max-width: 1600px) {
+  .layout {
     grid-template-columns: 1fr;
   }
+  .workspace {
+    display: flex;
+    flex-direction: column;
+  }
   .pool {
+    order: 1;
     position: static;
+    width: 100%;
+  }
+  .results {
+    max-height: 300px;
+  }
+  .builder {
+    order: 2;
+    width: 100%;
   }
   .library {
-    order: 2;
+    order: 3;
   }
 }
 @media (max-width: 560px) {
@@ -409,5 +450,8 @@
   }
   .stats {
     justify-content: space-between;
+  }
+  .results {
+    max-height: 100px;
   }
 }
