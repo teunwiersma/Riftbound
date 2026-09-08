@@ -38,9 +38,14 @@
     border-color 0.25s;
 }
 
-.navigation a.active,
 .navigation a:hover {
   color: var(--nav-text-color-hover);
   background-color: var(--nav-text-background-color);
   border: 1px solid color-mix(in srgb, var(--collection) 18%, transparent);
 }
+
+.navigation a.active {
+  color: var(--collection-wash);
+  background-color: var(--collection-dark);
+}
+
