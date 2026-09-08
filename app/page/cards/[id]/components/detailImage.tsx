@@ -83,7 +83,7 @@ const getHolographicStyle = ({
   isHolo
     ? ({
         "--holo-opacity":
-          rarity === "common" || rarity === "uncommon" ? ".32" : ".42",
+          rarity === "common" || rarity === "uncommon" ? ".22" : ".42",
         "--holo-x": `${50 + pointerX * 2}%`,
         "--holo-y": `${50 + pointerY * 2}%`,
         "--tilt-x": `${pointerY}deg`,
