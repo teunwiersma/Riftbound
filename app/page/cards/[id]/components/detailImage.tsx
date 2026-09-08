@@ -29,24 +29,22 @@ export default function DetailImage({
   const [shouldTilt, setShouldTilt] = useState(false);
   const imageRef = useRef<HTMLImageElement>(null);
   const imageProps = { src, alt, width, height };
-  const isHolo =
-    CardRarity.isHolo(rarity) || (holorQuantity && holorQuantity >= 1);
+
+  const isHolo = Boolean(
+    CardRarity.isHolo(rarity) || (holorQuantity && holorQuantity >= 1),
+  );
 
   const { pointerX, pointerY } = useImageTilt({
     image: imageRef,
     shouldTilt,
   });
 
-  const holographicStyle = isHolo
-    ? ({
-        "--holo-opacity":
-          rarity === "common" || rarity === "uncommon" ? ".32" : ".42",
-        "--holo-x": `${50 + pointerX * 2}%`,
-        "--holo-y": `${50 + pointerY * 2}%`,
-        "--tilt-x": `${pointerY}deg`,
-        "--tilt-y": `${pointerX}deg`,
-      } as CSSProperties)
-    : undefined;
+  const holographicStyle = getHolographicStyle({
+    isHolo,
+    rarity,
+    pointerX,
+    pointerY,
+  });
 
   return (
     <div className={style.detailImage}>
@@ -69,3 +67,27 @@ export default function DetailImage({
     </div>
   );
 }
+
+type Options = {
+  isHolo: boolean;
+  rarity: Rarity;
+  pointerX: number;
+  pointerY: number;
+};
+
+const getHolographicStyle = ({
+  isHolo,
+  rarity,
+  pointerX,
+  pointerY,
+}: Options) =>
+  isHolo
+    ? ({
+        "--holo-opacity":
+          rarity === "common" || rarity === "uncommon" ? ".32" : ".42",
+        "--holo-x": `${50 + pointerX * 2}%`,
+        "--holo-y": `${50 + pointerY * 2}%`,
+        "--tilt-x": `${pointerY}deg`,
+        "--tilt-y": `${pointerX}deg`,
+      } as CSSProperties)
+    : undefined;
