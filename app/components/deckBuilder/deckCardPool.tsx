@@ -40,6 +40,7 @@ export default function DeckCardPool({
     type: "",
     runeType: "",
   });
+
   const zone = DECK_ZONES.find((item) => item.id === zoneId) ?? DECK_ZONES[2];
   const allowedTypes = zone.types.map(normalize);
   const legendId = deck?.cards.find((item) => item.zone === "legend")?.cardId;
@@ -69,20 +70,24 @@ export default function DeckCardPool({
           `${card.name} ${card.type} ${card.set} ${card.rarity}`.toLowerCase();
         const matchesZone = matchesZoneType(card.type, allowedTypes);
         const eligible = Boolean(deck && canAddCard(deck, card, zoneId, cards));
+
         const matchesSearch =
           !filters.search || text.includes(filters.search.toLowerCase());
+
         const matchesSet = !filters.set || card.set === filters.set;
         const matchesRarity = !filters.rarity || card.rarity === filters.rarity;
         const matchesType = !filters.type || card.type === filters.type;
         const matchesRune =
           !filters.runeType ||
           normalize(card.faction).includes(filters.runeType);
+
         const matchesLegendRunes =
           zoneId !== "runes" ||
           domains.length === 0 ||
           domains.some((domain) =>
             normalize(card.name).includes(`${domain} rune`),
           );
+
         return (
           matchesZone &&
           eligible &&
@@ -94,7 +99,7 @@ export default function DeckCardPool({
           matchesLegendRunes
         );
       })
-      .slice(0, 36);
+      .slice(0, 50);
 
     return (
       <div className={styles.results}>

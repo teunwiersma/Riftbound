@@ -197,6 +197,36 @@ export function canAddCard(
   return true;
 }
 
+export function canMoveCard(
+  deck: DeckData,
+  card: DeckCardData,
+  sourceZone: DeckZoneId,
+  targetZone: DeckZoneId,
+  cards: DeckCardData[],
+) {
+  if (sourceZone === targetZone) return false;
+  const source = deck.cards.find(
+    (item) => item.cardId === card.id && item.zone === sourceZone,
+  );
+  if (!source) return false;
+
+  const withoutSource = {
+    ...deck,
+    cards: deck.cards.filter(
+      (item) => !(item.cardId === card.id && item.zone === sourceZone),
+    ),
+  };
+  const target = withoutSource.cards.find(
+    (item) => item.cardId === card.id && item.zone === targetZone,
+  );
+  if (!canAddCard(withoutSource, card, targetZone, cards)) return false;
+  return !(
+    target &&
+    (target.quantity + source.quantity > 3 ||
+      ["legend", "champion", "battlefields"].includes(targetZone))
+  );
+}
+
 export function validateDeck(
   deck: DeckData,
   cards: DeckCardData[],

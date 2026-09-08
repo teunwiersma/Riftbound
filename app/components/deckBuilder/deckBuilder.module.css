@@ -3,19 +3,21 @@
   padding: 28px;
   max-width: none;
 }
+
 .header,
 .builderHeader,
-.zoneHeader,
 .history > div:first-child {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 18px;
 }
+
 .header {
   align-items: end;
   margin-bottom: 24px;
 }
+
 .eyebrow {
   margin: 0 0 6px;
   color: var(--accent-dark);
@@ -24,10 +26,12 @@
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
+
 .header h1 {
   margin: 0;
   font-size: clamp(28px, 4vw, 48px);
 }
+
 .subtle,
 .deckItem span,
 .deckItem small,
@@ -36,10 +40,12 @@
 .version span {
   color: var(--muted);
 }
+
 .subtle {
   max-width: 620px;
   margin: 8px 0 0;
 }
+
 .primary,
 .delete,
 .row button,
@@ -47,6 +53,7 @@
   border: 0;
   cursor: pointer;
 }
+
 .primary {
   padding: 11px 16px;
   color: white;
@@ -54,16 +61,19 @@
   border-radius: 4px;
   font-weight: 800;
 }
+
 .primary:disabled {
   opacity: 0.55;
   cursor: wait;
 }
+
 .layout {
   display: grid;
   grid-template-columns: 260px minmax(0, 1fr);
   gap: 18px;
   align-items: start;
 }
+
 .library,
 .builder,
 .pool,
@@ -72,11 +82,13 @@
   border: 1px solid var(--line);
   border-radius: 6px;
 }
+
 .library {
   padding: 14px;
   display: grid;
   gap: 8px;
 }
+
 .search {
   display: grid;
   gap: 5px;
@@ -85,6 +97,7 @@
   font-weight: 800;
   text-transform: uppercase;
 }
+
 .search input,
 .search select,
 .champion input,
@@ -96,6 +109,7 @@
   border: 1px solid var(--line);
   border-radius: 4px;
 }
+
 .deckItem {
   display: grid;
   gap: 3px;
@@ -107,14 +121,17 @@
   border-radius: 4px;
   cursor: pointer;
 }
+
 .deckItem:hover,
 .selected {
   background: var(--collection-wash);
   border-color: var(--collection);
 }
+
 .deckItem small {
   font-size: 11px;
 }
+
 .workspace {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 460px;
@@ -122,14 +139,17 @@
   align-items: start;
   min-width: 0;
 }
+
 .builder {
   min-width: 0;
   padding: 18px;
 }
+
 .builderHeader {
   padding-bottom: 18px;
   border-bottom: 1px solid var(--line);
 }
+
 .titleInput {
   max-width: 420px;
   padding: 0;
@@ -138,21 +158,25 @@
   font-size: 26px;
   font-weight: 800;
 }
+
 .stats {
   display: flex;
   gap: 18px;
 }
+
 .stats strong {
   display: grid;
   color: var(--accent-dark);
   font-size: 22px;
 }
+
 .stats span {
   color: var(--muted);
   font-size: 10px;
   font-weight: 700;
   text-transform: uppercase;
 }
+
 .champion {
   display: grid;
   gap: 5px;
@@ -163,162 +187,44 @@
   font-weight: 800;
   text-transform: uppercase;
 }
+
 .validationError {
   margin: 12px 0 0;
   color: var(--danger, #a33a2b);
   font-size: 13px;
   font-weight: 700;
 }
+
 .validationSuccess {
   margin: 12px 0 0;
   color: var(--accent-dark);
   font-size: 13px;
   font-weight: 700;
 }
+
 .zones {
   display: grid;
   grid-template-columns: 180px 180px minmax(0, 1fr);
   gap: 16px;
 }
-.zone {
-  min-width: 0;
-}
-.zoneMain,
-.zoneRunes,
-.zoneSideboard {
-  grid-column: 1 / -1;
-}
-.zoneLegend {
-  grid-column: 1;
-  grid-row: 1;
-}
-.zoneChampion {
-  grid-column: 2;
-  grid-row: 1;
-}
-.zoneBattlefields {
-  grid-column: 3;
-  grid-row: 1;
-}
-.zoneMain {
-  grid-row: 2;
-}
-.zoneRunes {
-  grid-row: 3;
-}
-.zoneSideboard {
-  grid-row: 4;
-}
-.zoneLegend .cardGrid,
-.zoneChampion .cardGrid,
-.zoneBattlefields .cardGrid {
-  display: flex;
-  flex-flow: row wrap;
-  gap: 12px;
-  align-items: start;
-}
-.zoneLegend .cardGrid > *,
-.zoneChampion .cardGrid > *,
-.zoneBattlefields .cardGrid > * {
-  flex: 0 1 180px;
-}
-.zoneBattlefields .cardGrid {
-  flex-wrap: nowrap;
-}
-.zoneMain .cardGrid {
-  display: flex;
-  flex-flow: row wrap;
-  gap: 12px;
-  align-items: start;
-}
-.zoneMain .cardGrid > * {
-  flex: 0 1 180px;
-}
-.zoneRunes .cardGrid {
-  display: flex;
-  flex-flow: row wrap;
-  gap: 12px;
-  align-items: start;
-}
-.zoneRunes .cardGrid > * {
-  flex: 0 1 180px;
-}
-.deckCard h2 {
-  display: none;
-}
-.deckCard {
-  background-color: var(--collection-wash);
-}
-.draggableCard {
-  flex: 0 0 180px;
-  width: 180px;
-  min-width: 0;
-  cursor: grab;
-}
-.draggableCard .deckCard {
-  width: 100%;
-}
-.draggableCard:active {
-  cursor: grabbing;
-}
-.isDragging {
-  opacity: 0.45;
-}
-.zoneHeader h2,
-.history h2 {
-  margin: 0;
-  font-size: 17px;
-}
-.zoneHeader span {
-  color: var(--muted);
-  font-weight: 800;
-}
-.cardGrid {
-  display: flex;
-  flex-flow: row wrap;
-  gap: 12px;
-  margin-top: 12px;
-}
-.deckControls {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  padding: 0 8px 8px;
-  min-height: 28px;
-  width: 100%;
-}
-.deckControls button {
-  width: 28px;
-  height: 28px;
-  padding: 0;
-  color: var(--ink);
-  background: var(--collection-wash);
-  border: 0;
-  border-radius: 3px;
-  cursor: pointer;
-  font-size: 16px;
-}
-.deckControls output {
-  min-width: 20px;
-  text-align: center;
-  font-size: 14px;
-  font-weight: 800;
-}
+
 .row,
 .results button {
   display: flex;
   align-items: center;
   gap: 10px;
 }
+
 .row {
   min-height: 70px;
   padding: 8px 0;
   border-top: 1px solid var(--line);
 }
+
 .row:first-of-type {
   margin-top: 10px;
 }
+
 .row span,
 .results span {
   display: grid;
@@ -326,50 +232,59 @@
   min-width: 0;
   flex: 1;
 }
+
 .row strong,
 .results strong {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
 .row button {
   width: 28px;
   height: 28px;
   background: var(--collection-wash);
   border-radius: 3px;
 }
+
 .row output {
   min-width: 20px;
   text-align: center;
   font-weight: 800;
 }
+
 .row .remove {
   margin-left: 4px;
   color: var(--accent-dark);
   background: transparent;
   font-size: 20px;
 }
-.zoneEmpty,
+
 .empty {
   color: var(--muted);
   font-size: 14px;
 }
+
 .pool {
   position: sticky;
   top: 18px;
   padding: 14px;
 }
+
 .pool > .search {
   gap: 3px;
   font-size: 10px;
 }
+
 .pool > .search select {
   padding: 6px 7px;
   font-size: 12px;
 }
+
 .pool .search + .search {
   margin-top: 12px;
 }
+
 .results {
   display: grid;
   gap: 4px;
@@ -377,6 +292,7 @@
   margin-top: 14px;
   overflow: auto;
 }
+
 .results button {
   width: 100%;
   padding: 6px;
@@ -386,19 +302,28 @@
   border: 0;
   cursor: pointer;
 }
+
 .results button:hover {
   background: var(--collection-wash);
 }
+
 .results b {
   color: var(--accent);
   font-size: 20px;
 }
+
 .history {
   display: grid;
   gap: 10px;
   margin-top: 18px;
   padding: 16px;
 }
+
+.history h2 {
+  margin: 0;
+  font-size: 17px;
+}
+
 .version {
   display: flex;
   justify-content: space-between;
@@ -407,6 +332,7 @@
   border-top: 1px solid var(--line);
   font-size: 13px;
 }
+
 .delete {
   margin-top: 18px;
   padding: 8px 0;
@@ -415,6 +341,7 @@
   font-size: 12px;
   font-weight: 800;
 }
+
 @media (max-width: 1600px) {
   .layout {
     grid-template-columns: 1fr;
@@ -427,6 +354,9 @@
     order: 1;
     position: static;
     width: 100%;
+    border-width: 4px;
+    border-style: solid;
+    border-color: red;
   }
   .results {
     max-height: 300px;
@@ -436,9 +366,10 @@
     width: 100%;
   }
   .library {
-    order: 3;
+    display: none;
   }
 }
+
 @media (max-width: 560px) {
   .page {
     padding: 16px;

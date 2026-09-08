@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useRef, useState, useTransition } from "react";
 import { toast } from "sonner";
 import {
   createDeck,
@@ -15,13 +15,14 @@ import {
   type DeckZoneId,
 } from "@/api/deckTypes";
 import DeckCardPool from "./deckCardPool";
-import Card from "../card/card";
-import type { CardDTO } from "@/api/types";
+import DeckZone from "./deckZone";
+import NarrowDeckSelect from "./narrowDeckSelect";
 import {
   canAddCard,
   legendDomains,
   zoneTotal,
   basicRuneForDomain,
+  canMoveCard,
   validateDeck,
 } from "@/api/deckRules";
 import styles from "./deckBuilder.module.css";
@@ -45,11 +46,14 @@ export default function DeckBuilder({ initialDecks, cards }: Props) {
   const [activeId, setActiveId] = useState(initialDecks[0]?.id ?? null);
   const [query, setQuery] = useState("");
   const [zoneId, setZoneId] = useState<DeckZoneId>("main");
+
   const [draggedCard, setDraggedCard] = useState<{
     cardId: string;
     zone: DeckZoneId;
   } | null>(null);
+
   const [isPending, startTransition] = useTransition();
+  const saveQueue = useRef(Promise.resolve());
   const active = decks.find((deck) => deck.id === activeId) ?? null;
   const versionErrors = active ? validateDeck(active, cards, true) : [];
 
@@ -60,7 +64,7 @@ export default function DeckBuilder({ initialDecks, cards }: Props) {
   }
 
   function persist(deck: DeckData, version = false) {
-    startTransition(async () => {
+    const save = saveQueue.current.then(async () => {
       try {
         if (version) {
           const result = await saveDeckVersion(
@@ -69,18 +73,24 @@ export default function DeckBuilder({ initialDecks, cards }: Props) {
             deck.champion,
             deck.cards,
           );
-          replaceActive({
-            ...deck,
-            versions: [
-              {
-                number: result.number,
-                setCode: result.setCode,
-                savedAt: new Date().toISOString(),
-                snapshot: {},
-              },
-              ...deck.versions,
-            ],
-          });
+          setDecks((current) =>
+            current.map((currentDeck) =>
+              currentDeck.id === deck.id
+                ? {
+                    ...currentDeck,
+                    versions: [
+                      {
+                        number: result.number,
+                        setCode: result.setCode,
+                        savedAt: new Date().toISOString(),
+                        snapshot: {},
+                      },
+                      ...currentDeck.versions,
+                    ],
+                  }
+                : currentDeck,
+            ),
+          );
           toast.success(`Saved version ${result.number}.`);
         } else {
           await updateDeck(deck.id, deck.name, deck.champion, deck.cards);
@@ -91,6 +101,10 @@ export default function DeckBuilder({ initialDecks, cards }: Props) {
           error instanceof Error ? error.message : "Could not save deck.",
         );
       }
+    });
+    saveQueue.current = save.catch(() => undefined);
+    startTransition(() => {
+      void save;
     });
   }
 
@@ -120,6 +134,7 @@ export default function DeckBuilder({ initialDecks, cards }: Props) {
     if (delta > 0 && targetZone === "runes" && !isLegendRune(active, card))
       return false;
     const nextQuantity = Math.max(0, current + delta);
+    if (nextQuantity === current) return false;
     const cardIndex = active.cards.findIndex(
       (item) => item.cardId === cardId && item.zone === targetZone,
     );
@@ -142,7 +157,9 @@ export default function DeckBuilder({ initialDecks, cards }: Props) {
           (item) => item.cardId === rune.id && item.zone === "runes",
         );
         if (existing) {
-          existing.quantity = 6;
+          nextCards = nextCards.map((item) =>
+            item === existing ? { ...item, quantity: 6 } : item,
+          );
         } else {
           nextCards.push({ cardId: rune.id, zone: "runes", quantity: 6 });
         }
@@ -195,6 +212,55 @@ export default function DeckBuilder({ initialDecks, cards }: Props) {
     });
   }
 
+  function changeCardFor(zone: DeckZoneId, cardId: string, delta: number) {
+    setZoneId(zone);
+    const changed = changeCard(cardId, delta, zone);
+    if (changed && delta > 0) {
+      if (zone === "legend") setZoneId("champion");
+      if (zone === "champion") setZoneId("main");
+    }
+  }
+
+  function moveCard(
+    cardId: string,
+    sourceZone: DeckZoneId,
+    targetZone: DeckZoneId,
+  ) {
+    if (!active || sourceZone === targetZone) return false;
+    const card = cards.find((item) => item.id === cardId);
+    const source = active.cards.find(
+      (item) => item.cardId === cardId && item.zone === sourceZone,
+    );
+    if (!card || !source) return false;
+    if (!canMoveCard(active, card, sourceZone, targetZone, cards)) return false;
+
+    const withoutSource = {
+      ...active,
+      cards: active.cards.filter(
+        (item) => !(item.cardId === cardId && item.zone === sourceZone),
+      ),
+    };
+    const target = withoutSource.cards.find(
+      (item) => item.cardId === cardId && item.zone === targetZone,
+    );
+
+    const nextCards = target
+      ? withoutSource.cards.map((item) =>
+          item === target
+            ? { ...item, quantity: item.quantity + source.quantity }
+            : item,
+        )
+      : [...withoutSource.cards, { ...source, zone: targetZone }];
+    const next = {
+      ...active,
+      cards: nextCards,
+      updatedAt: new Date().toISOString(),
+    };
+    replaceActive(next);
+    persist(next);
+    return true;
+  }
+
   return (
     <div className={styles.page}>
       <header className={styles.header}>
@@ -215,6 +281,11 @@ export default function DeckBuilder({ initialDecks, cards }: Props) {
           + New deck
         </button>
       </header>
+      <NarrowDeckSelect
+        decks={decks}
+        activeId={activeId}
+        onChange={setActiveId}
+      />
       <div className={styles.layout}>
         <aside className={styles.library}>
           <label className={styles.search}>
@@ -267,6 +338,7 @@ export default function DeckBuilder({ initialDecks, cards }: Props) {
                       onChange={(event) =>
                         replaceActive({ ...active, name: event.target.value })
                       }
+                      onBlur={() => persist(active)}
                     />
                     <p className={styles.subtle}>
                       {active.versions.length
@@ -385,84 +457,6 @@ export default function DeckBuilder({ initialDecks, cards }: Props) {
       </div>
     </div>
   );
-
-  function changeCardFor(zone: DeckZoneId, cardId: string, delta: number) {
-    setZoneId(zone);
-    const changed = changeCard(cardId, delta, zone);
-    if (changed && delta > 0) {
-      if (zone === "legend") setZoneId("champion");
-      if (zone === "champion") setZoneId("main");
-    }
-  }
-
-  function moveCard(
-    cardId: string,
-    sourceZone: DeckZoneId,
-    targetZone: DeckZoneId,
-  ) {
-    if (!active || sourceZone === targetZone) return false;
-    const card = cards.find((item) => item.id === cardId);
-    const source = active.cards.find(
-      (item) => item.cardId === cardId && item.zone === sourceZone,
-    );
-    if (!card || !source) return false;
-
-    const withoutSource = {
-      ...active,
-      cards: active.cards.filter(
-        (item) => !(item.cardId === cardId && item.zone === sourceZone),
-      ),
-    };
-    const target = withoutSource.cards.find(
-      (item) => item.cardId === cardId && item.zone === targetZone,
-    );
-    if (!canAddCard(withoutSource, card, targetZone, cards)) return false;
-    if (
-      target &&
-      (target.quantity + source.quantity > 3 ||
-        ["legend", "champion", "battlefields"].includes(targetZone))
-    )
-      return false;
-
-    const nextCards = target
-      ? withoutSource.cards.map((item) =>
-          item === target
-            ? { ...item, quantity: item.quantity + source.quantity }
-            : item,
-        )
-      : [...withoutSource.cards, { ...source, zone: targetZone }];
-    const next = {
-      ...active,
-      cards: nextCards,
-      updatedAt: new Date().toISOString(),
-    };
-    replaceActive(next);
-    persist(next);
-    return true;
-  }
-}
-
-function toCardDTO(card: DeckCardData): CardDTO {
-  return {
-    id: card.id,
-    collectorNumber: 0,
-    set: card.set,
-    name: card.name,
-    description: card.description,
-    type: card.type,
-    rarity: card.rarity,
-    faction: card.faction,
-    stats: { energy: 0, might: 0, cost: 0, power: 0 },
-    keywords: card.keywords,
-    art: {
-      thumbnailURL: card.imageURL,
-      fullURL: card.imageURL,
-      imageURL: card.imageURL,
-      artist: "",
-    },
-    flavorText: "",
-    tags: card.tags,
-  };
 }
 
 function missingCards(deck: DeckData, cards: DeckCardData[]) {
@@ -470,131 +464,4 @@ function missingCards(deck: DeckData, cards: DeckCardData[]) {
     const card = cards.find((candidate) => candidate.id === item.cardId);
     return total + Math.max(0, item.quantity - (card?.owned ?? 0));
   }, 0);
-}
-
-function DeckZone({
-  zone,
-  deck,
-  cards,
-  onChange,
-  onDrop,
-  onDragStart,
-  onDragEnd,
-  draggedCard,
-}: {
-  zone: (typeof DECK_ZONES)[number];
-  deck: DeckData;
-  cards: DeckCardData[];
-  onChange: (cardId: string, delta: number) => void;
-  onDrop: (
-    cardId: string,
-    sourceZone: DeckZoneId,
-    targetZone: DeckZoneId,
-  ) => void;
-  onDragStart: (cardId: string, zone: DeckZoneId) => void;
-  onDragEnd: () => void;
-  draggedCard: { cardId: string; zone: DeckZoneId } | null;
-}) {
-  const rows = deck.cards.filter((item) => item.zone === zone.id);
-  const zoneClass =
-    zone.id === "legend"
-      ? styles.zoneLegend
-      : zone.id === "champion"
-        ? styles.zoneChampion
-        : zone.id === "battlefields"
-          ? styles.zoneBattlefields
-          : zone.id === "main"
-            ? styles.zoneMain
-            : zone.id === "runes"
-              ? styles.zoneRunes
-              : styles.zoneSideboard;
-  return (
-    <section
-      className={`${styles.zone} ${zoneClass}`}
-      onDragOver={(event) => event.preventDefault()}
-      onDrop={(event) => {
-        event.preventDefault();
-        const payload = event.dataTransfer.getData(
-          "application/riftbound-card",
-        );
-        if (!payload) return;
-        const [cardId, sourceZone] = payload.split(":");
-        if (cardId && sourceZone)
-          onDrop(cardId, sourceZone as DeckZoneId, zone.id);
-      }}
-    >
-      <div className={styles.zoneHeader}>
-        <h2>{zone.label}</h2>
-        <span>
-          {rows.reduce((sum, row) => sum + row.quantity, 0)} / {zone.target}
-        </span>
-      </div>
-      {rows.length ? (
-        <div className={styles.cardGrid}>
-          {rows.map((row) => {
-            const card = cards.find((item) => item.id === row.cardId);
-            if (!card) return null;
-            const canAdjustQuantity = ![
-              "legend",
-              "champion",
-              "battlefields",
-            ].includes(zone.id);
-            return (
-              <div
-                key={row.cardId}
-                className={`${styles.draggableCard} ${
-                  draggedCard?.cardId === row.cardId &&
-                  draggedCard.zone === zone.id
-                    ? styles.isDragging
-                    : ""
-                }`}
-                draggable
-                onDragStart={(event) => {
-                  event.dataTransfer.effectAllowed = "move";
-                  event.dataTransfer.setData(
-                    "application/riftbound-card",
-                    `${row.cardId}:${zone.id}`,
-                  );
-                  onDragStart(row.cardId, zone.id);
-                }}
-                onDragEnd={onDragEnd}
-              >
-                <Card
-                  data={toCardDTO(card)}
-                  className={styles.deckCard}
-                  controls={
-                    <div className={styles.deckControls}>
-                      {canAdjustQuantity && (
-                        <button
-                          type="button"
-                          onClick={() => onChange(row.cardId, -1)}
-                          aria-label={`Remove one ${card.name}`}
-                        >
-                          -
-                        </button>
-                      )}
-                      <output>{row.quantity}</output>
-                      {canAdjustQuantity && (
-                        <button
-                          type="button"
-                          onClick={() => onChange(row.cardId, 1)}
-                          aria-label={`Add one ${card.name}`}
-                        >
-                          +
-                        </button>
-                      )}
-                    </div>
-                  }
-                />
-              </div>
-            );
-          })}
-        </div>
-      ) : (
-        <p className={styles.zoneEmpty}>
-          Add {zone.label.toLowerCase()} cards from the pool.
-        </p>
-      )}
-    </section>
-  );
 }
