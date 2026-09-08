@@ -9,6 +9,9 @@ import { useImageTilt } from "../hooks/useImageTilt";
 import { Rarity } from "@/app/types/rarity";
 import { CardRarity } from "@/app/helpers/CardRarity";
 
+const COMMON_AND_UNCOMMON_HOLO = ".25";
+const RARE_AND_ABOVE_HOLO = ".45";
+
 type ImageProps = {
   src: string;
   alt: string;
@@ -83,7 +86,9 @@ const getHolographicStyle = ({
   isHolo
     ? ({
         "--holo-opacity":
-          rarity === "common" || rarity === "uncommon" ? ".22" : ".42",
+          rarity === "common" || rarity === "uncommon"
+            ? COMMON_AND_UNCOMMON_HOLO
+            : RARE_AND_ABOVE_HOLO,
         "--holo-x": `${50 + pointerX * 2}%`,
         "--holo-y": `${50 + pointerY * 2}%`,
         "--tilt-x": `${pointerY}deg`,

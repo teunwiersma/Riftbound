@@ -30,13 +30,13 @@
     ),
     radial-gradient(
       circle at var(--holo-x) var(--holo-y),
-      rgba(255, 238, 92, .95),
-      rgba(255, 87, 190, .65) 22%,
-      rgba(94, 232, 255, .6) 46%,
-      rgba(132, 91, 255, .35) 68%,
+      rgba(255, 238, 92, .6),
+      rgba(255, 87, 190, .45) 22%,
+      rgba(94, 232, 255, .3) 46%,
+      rgba(132, 91, 255, .2) 68%,
       transparent 82%
     );
   background-size: 220% 220%, 180% 180%;
-  background-position: calc(50% + var(--holo-x)) 50%, var(--holo-x) var(--holo-y);
+  background-position: calc(50% + var(--holo-x)) 10%, var(--holo-x) var(--holo-y);
   transition: opacity .2s ease;
 }

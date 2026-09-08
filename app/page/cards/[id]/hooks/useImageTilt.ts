@@ -61,11 +61,11 @@ export function useImageTilt({
     }
 
     image.addEventListener('pointermove', handlePointerMove);
-    image.addEventListener('pointerLeave', handlePointerLeave);
+    image.addEventListener("pointerleave", handlePointerLeave);
 
     return () => {
       image.removeEventListener('pointermove', handlePointerMove);
-      image.removeEventListener('pointerLeave', handlePointerLeave);
+      image.removeEventListener("pointerleave", handlePointerLeave);
       handlePointerMove.cancel();
     }
   }, [imageRef, shouldTilt])
