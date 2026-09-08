@@ -10,6 +10,7 @@ import AddToCollectionButton from "@/app/components/button/addToCollectionButton
 import { notFound } from "next/navigation";
 import styles from "./card.module.css";
 import DetailImage from "./components/detailImage";
+import { Rarity } from "@/app/types/rarity";
 
 type CardDetailsProps = {
   params: Promise<{ id: string }>;
@@ -58,7 +59,11 @@ export default async function CardDetails({ params }: CardDetailsProps) {
           />
         </div>
         <div className={styles.content}>
-          <DetailImage {...imageProps} />
+          <DetailImage
+            {...imageProps}
+            rarity={card.rarity as Rarity}
+            holorQuantity={collectionItem?.holoQuantity}
+          />
           <div className={styles.info}>
             <h2>Stats</h2>
             <h3>Energy: {card.energy}</h3>

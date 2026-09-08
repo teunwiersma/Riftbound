@@ -1,8 +1,42 @@
 .detailImage {
+  position: relative;
   perspective: 1000px;
 }
 
 .image {
+  position: relative;
+  display: block;
+  border-radius: 12px;
   transition: all .1s;
   transform-style: preserve-3d;
+}
+
+.holographicOverlay {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  border-radius: 12px;
+  pointer-events: none;
+  opacity: var(--holo-opacity, .42);
+  mix-blend-mode: color-dodge;
+  transform: rotateX(var(--tilt-x)) rotateY(var(--tilt-y)) translateZ(21px);
+  transform-style: preserve-3d;
+  background:
+    linear-gradient(
+      115deg,
+      transparent 18%,
+      rgba(255, 255, 255, .7) 34%,
+      transparent 48%
+    ),
+    radial-gradient(
+      circle at var(--holo-x) var(--holo-y),
+      rgba(255, 238, 92, .95),
+      rgba(255, 87, 190, .65) 22%,
+      rgba(94, 232, 255, .6) 46%,
+      rgba(132, 91, 255, .35) 68%,
+      transparent 82%
+    );
+  background-size: 220% 220%, 180% 180%;
+  background-position: calc(50% + var(--holo-x)) 50%, var(--holo-x) var(--holo-y);
+  transition: opacity .2s ease;
 }

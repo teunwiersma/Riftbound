@@ -1,42 +1,70 @@
 "use client";
 
 import Image from "next/image";
+import type { CSSProperties } from "react";
 import { useRef, useState } from "react";
 
 import style from "./detailImage.module.css";
 import { useImageTilt } from "../hooks/useImageTilt";
+import { Rarity } from "@/app/types/rarity";
+import { CardRarity } from "@/app/helpers/CardRarity";
 
 type Props = {
   src: string;
   alt: string;
   width: number;
   height: number;
-  priority: boolean;
+  rarity: Rarity;
+  holorQuantity?: number;
 };
 
-export default function DetailImage(props: Props) {
-  const [shouldTrack, setShouldTrack] = useState(false);
+export default function DetailImage({
+  src,
+  alt,
+  width,
+  height,
+  rarity,
+  holorQuantity,
+}: Props) {
+  const [shouldTilt, setShouldTilt] = useState(false);
   const imageRef = useRef<HTMLImageElement>(null);
-  const wrapperRef = useRef<HTMLImageElement>(null);
+  const imageProps = { src, alt, width, height };
+  const isHolo =
+    CardRarity.isHolo(rarity) || (holorQuantity && holorQuantity >= 1);
 
-  const { rotateY, rotateX } = useImageTilt({
+  const { pointerX, pointerY } = useImageTilt({
     image: imageRef,
-    wrapper: wrapperRef,
-    shouldTrack,
+    shouldTilt,
   });
 
+  const holographicStyle = isHolo
+    ? ({
+        "--holo-opacity":
+          rarity === "common" || rarity === "uncommon" ? ".32" : ".42",
+        "--holo-x": `${50 + pointerX * 2}%`,
+        "--holo-y": `${50 + pointerY * 2}%`,
+        "--tilt-x": `${pointerY}deg`,
+        "--tilt-y": `${pointerX}deg`,
+      } as CSSProperties)
+    : undefined;
+
   return (
-    <div className={style.detailImage} ref={wrapperRef}>
+    <div className={style.detailImage}>
       {/* eslint-disable-next-line jsx-a11y/alt-text -- already has alt attribute attatched */}
       <Image
-        {...props}
+        {...imageProps}
         style={{
-          transform: `rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateZ(20px)`,
+          transform: `rotateX(${pointerY}deg) rotateY(${pointerX}deg) translateZ(20px)`,
         }}
         ref={imageRef}
-        onPointerEnter={() => setShouldTrack(true)}
-        onPointerLeave={() => setShouldTrack(false)}
+        onPointerEnter={() => setShouldTilt(true)}
+        onPointerLeave={() => setShouldTilt(false)}
         className={style.image}
+      />
+      <div
+        aria-hidden="true"
+        className={style.holographicOverlay}
+        style={holographicStyle}
       />
     </div>
   );
