@@ -14,17 +14,19 @@ type ImageProps = {
   alt: string;
   width: number;
   height: number;
+  priority?: boolean;
 };
 
-type Props = {
+type DetailImageProps = ImageProps & {
   rarity: Rarity;
   holorQuantity?: number;
 };
 
-export default function DetailImage(
-  imageProps: ImageProps,
-  { rarity, holorQuantity }: Props,
-) {
+export default function DetailImage({
+  rarity,
+  holorQuantity,
+  ...imageProps
+}: DetailImageProps) {
   const [shouldTilt, setShouldTilt] = useState(false);
   const imageRef = useRef<HTMLImageElement>(null);
   const isHolo = Boolean(
