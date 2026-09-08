@@ -9,27 +9,24 @@ import { useImageTilt } from "../hooks/useImageTilt";
 import { Rarity } from "@/app/types/rarity";
 import { CardRarity } from "@/app/helpers/CardRarity";
 
-type Props = {
+type ImageProps = {
   src: string;
   alt: string;
   width: number;
   height: number;
+};
+
+type Props = {
   rarity: Rarity;
   holorQuantity?: number;
 };
 
-export default function DetailImage({
-  src,
-  alt,
-  width,
-  height,
-  rarity,
-  holorQuantity,
-}: Props) {
+export default function DetailImage(
+  imageProps: ImageProps,
+  { rarity, holorQuantity }: Props,
+) {
   const [shouldTilt, setShouldTilt] = useState(false);
   const imageRef = useRef<HTMLImageElement>(null);
-  const imageProps = { src, alt, width, height };
-
   const isHolo = Boolean(
     CardRarity.isHolo(rarity) || (holorQuantity && holorQuantity >= 1),
   );
