@@ -4,23 +4,24 @@ import { throttle } from "lodash"
 type Options = {
   image: RefObject<HTMLImageElement> | null;
   shouldTilt: boolean;
-  resetToDefaultOnLeave?: boolean;
 }
 
-type ReturnType = {
+type TiltValues = {
   pointerX: number;
   pointerY: number;
 };
 
 const MAX_TILT = 10;
 
+/** 
+ * Tracks pointer movement to tilt an image and resets the tilt on pointer leave.
+ */ 
 export function useImageTilt({
   image: imageRef,
   shouldTilt,
-  resetToDefaultOnLeave = true,
-}: Options): ReturnType {
-  const [pointerX, setpointerX] = useState(0);
-  const [pointerY, setpointerY] = useState(0);
+}: Options): TiltValues {
+  const [pointerX, setPointerX] = useState(0);
+  const [pointerY, setPointerY] = useState(0);
 
   useEffect(() => {
     const image = imageRef?.current;
@@ -50,27 +51,25 @@ export function useImageTilt({
       const rotateY = normalizedX * MAX_TILT;
       const rotateX = normalizedY * -MAX_TILT;
 
-      setpointerX(rotateY);
-      setpointerY(rotateX);
+      setPointerX(rotateY);
+      setPointerY(rotateX);
     }, 50);
 
+    const handlePointerLeave = () => {
+      setPointerX(0);
+      setPointerY(0);
+    }
+
     image.addEventListener('pointermove', handlePointerMove);
+    image.addEventListener('pointerLeave', handlePointerLeave);
 
     return () => {
       image.removeEventListener('pointermove', handlePointerMove);
+      image.removeEventListener('pointerLeave', handlePointerLeave);
       handlePointerMove.cancel();
-
-      if (resetToDefaultOnLeave) {
-        setpointerX(0);
-        setpointerY(0);
-      }
     }
-  }, [imageRef, resetToDefaultOnLeave, shouldTilt])
+  }, [imageRef, shouldTilt])
 
-  /**
-   * Return the tilt for each axis. Reverse the vertical tilt so the card
-   * moves as though the pointer is pressing down on it.
-   */
   return {
     pointerX,
     pointerY
