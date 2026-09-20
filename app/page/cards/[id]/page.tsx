@@ -1,15 +1,16 @@
-import Image from "next/image";
-import { notFound } from "next/navigation";
-import prisma from "@/api/data/prisma";
 import {
-  addHoloToCollection,
+  CollectionActions,
   addToCollection,
-  removeHoloFromCollection,
   removeFromCollection,
-  type CollectionActions,
+  addHoloToCollection,
+  removeHoloFromCollection,
 } from "@/api/data/collectionActions";
+import prisma from "@/api/data/prisma";
+import AddToCollectionButton from "@/app/components/button/addToCollectionButton";
+import { notFound } from "next/navigation";
 import styles from "./card.module.css";
-import AddToCollectionButton from "../../../components/button/addToCollectionButton";
+import DetailImage from "./components/detailImage";
+import { Rarity } from "@/app/types/rarity";
 
 type CardDetailsProps = {
   params: Promise<{ id: string }>;
@@ -37,6 +38,14 @@ export default async function CardDetails({ params }: CardDetailsProps) {
     where: { cardId: id },
   });
 
+  const imageProps = {
+    src: `/api/cards/${card.id}/image`,
+    alt: card.name,
+    width: 488,
+    height: 680,
+    priority: true,
+  };
+
   return (
     <div className={styles.cardDetails}>
       <div>
@@ -50,13 +59,10 @@ export default async function CardDetails({ params }: CardDetailsProps) {
           />
         </div>
         <div className={styles.content}>
-          <Image
-            className={styles.image}
-            src={`/api/cards/${card.id}/image`}
-            alt={card.name}
-            width={488}
-            height={680}
-            priority
+          <DetailImage
+            {...imageProps}
+            rarity={card.rarity as Rarity}
+            holorQuantity={collectionItem?.holoQuantity}
           />
           <div className={styles.info}>
             <h2>Stats</h2>
