@@ -63,7 +63,7 @@ export default function DeckBuilder({ initialDecks, cards }: Props) {
     );
   }
 
-  function persist(deck: DeckData, version = false) {
+  function save(deck: DeckData, version = false) {
     const save = saveQueue.current.then(async () => {
       try {
         if (version) {
@@ -171,7 +171,7 @@ export default function DeckBuilder({ initialDecks, cards }: Props) {
       updatedAt: new Date().toISOString(),
     };
     replaceActive(next);
-    persist(next);
+    save(next);
     return true;
   }
 
@@ -257,7 +257,7 @@ export default function DeckBuilder({ initialDecks, cards }: Props) {
       updatedAt: new Date().toISOString(),
     };
     replaceActive(next);
-    persist(next);
+    save(next);
     return true;
   }
 
@@ -338,13 +338,20 @@ export default function DeckBuilder({ initialDecks, cards }: Props) {
                       onChange={(event) =>
                         replaceActive({ ...active, name: event.target.value })
                       }
-                      onBlur={() => persist(active)}
+                      onBlur={() => save(active)}
                     />
-                    <p className={styles.subtle}>
-                      {active.versions.length
-                        ? `Version ${active.versions[0].number} saved ${new Date(active.versions[0].savedAt).toLocaleDateString()}`
-                        : "Not saved as a version yet"}
-                    </p>
+                    <div className={styles.versionMeta}>
+                      <p className={styles.subtle}>
+                        {active.versions.length
+                          ? `Version ${active.versions[0].number} saved ${new Date(active.versions[0].savedAt).toLocaleDateString()}`
+                          : "Not saved as a version yet"}
+                      </p>
+                      {versionErrors.length > 0 && (
+                        <span className={styles.validationError}>
+                          {versionErrors.join(" ")}
+                        </span>
+                      )}
+                    </div>
                   </div>
                   <div className={styles.stats}>
                     <strong>
@@ -362,34 +369,12 @@ export default function DeckBuilder({ initialDecks, cards }: Props) {
                   <button
                     className={styles.primary}
                     type="button"
-                    onClick={() => persist(active, true)}
+                    onClick={() => save(active, true)}
                     disabled={isPending || !active.name.trim()}
                   >
                     Save version
                   </button>
                 </div>
-                {versionErrors.length > 0 && (
-                  <p className={styles.validationError}>
-                    {versionErrors.join(" ")}
-                  </p>
-                )}
-                {!versionErrors.length && (
-                  <p className={styles.validationSuccess}>
-                    This deck is legal and ready to save.
-                  </p>
-                )}
-                <label className={styles.champion}>
-                  <span>Legend / champion</span>
-                  <input
-                    value={active.champion}
-                    onChange={(event) => {
-                      const next = { ...active, champion: event.target.value };
-                      replaceActive(next);
-                      persist(next);
-                    }}
-                    placeholder="For example Jinx"
-                  />
-                </label>
                 <section className={styles.zones}>
                   {DECK_ZONES.map((zone) => (
                     <DeckZone
@@ -401,6 +386,7 @@ export default function DeckBuilder({ initialDecks, cards }: Props) {
                         setZoneId(zone.id);
                         changeCardFor(zone.id, cardId, delta);
                       }}
+                      onZoneSelect={setZoneId}
                       onDrop={(cardId, sourceZone, targetZone) => {
                         moveCard(cardId, sourceZone, targetZone);
                         setDraggedCard(null);

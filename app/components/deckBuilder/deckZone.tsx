@@ -17,6 +17,7 @@ type Props = {
   deck: DeckData;
   cards: DeckCardData[];
   onChange: (cardId: string, delta: number) => void;
+  onZoneSelect: (zone: DeckZoneId) => void;
   onDrop: (
     cardId: string,
     sourceZone: DeckZoneId,
@@ -64,12 +65,20 @@ export default function DeckZone({
   deck,
   cards,
   onChange,
+  onZoneSelect,
   onDrop,
   onDragStart,
   onDragEnd,
   draggedCard,
 }: Props) {
   const rows = deck.cards.filter((item) => item.zone === zone.id);
+  const cardCount = rows.reduce((sum, row) => sum + row.quantity, 0);
+  let emptySlots = Math.max(0, zone.target - cardCount);
+  if (["main", "sideboard"].includes(zone.id)) {
+    emptySlots = cardCount < zone.target ? 1 : 0;
+  } else if (zone.id === "runes") {
+    emptySlots = cardCount < zone.target ? 2 : 0;
+  }
   const canAdjustQuantity = !["legend", "champion", "battlefields"].includes(
     zone.id,
   );
@@ -80,11 +89,15 @@ export default function DeckZone({
       onDragOver={(event) => event.preventDefault()}
       onDrop={(event) => {
         event.preventDefault();
+
         const payload = event.dataTransfer.getData(
           "application/riftbound-card",
         );
+
         if (!payload) return;
+
         const [cardId, sourceZone] = payload.split(":");
+
         if (cardId && sourceZone)
           onDrop(cardId, sourceZone as DeckZoneId, zone.id);
       }}
@@ -92,10 +105,10 @@ export default function DeckZone({
       <div className={styles.zoneHeader}>
         <h2>{zone.label}</h2>
         <span>
-          {rows.reduce((sum, row) => sum + row.quantity, 0)} / {zone.target}
+          {cardCount} / {zone.target}
         </span>
       </div>
-      {rows.length ? (
+      {rows.length || emptySlots ? (
         <div className={styles.cardGrid}>
           {rows.map((row) => {
             const card = cards.find((item) => item.id === row.cardId);
@@ -123,6 +136,7 @@ export default function DeckZone({
                 <Card
                   data={toCardDTO(card)}
                   className={styles.deckCard}
+                  onClick={() => onChange(row.cardId, -1)}
                   controls={
                     <div className={styles.deckControls}>
                       {canAdjustQuantity && (
@@ -150,6 +164,19 @@ export default function DeckZone({
               </div>
             );
           })}
+          {Array.from({ length: emptySlots }, (_, index) => (
+            <button
+              className={styles.emptyCard}
+              key={`${zone.id}-empty-${index}`}
+              type="button"
+              onClick={() => onZoneSelect(zone.id)}
+              aria-label={`Add a card to the ${zone.label.toLowerCase()}`}
+            >
+              <span>+</span>
+              <strong>{zone.label}</strong>
+              <small>Select to add</small>
+            </button>
+          ))}
         </div>
       ) : (
         <p className={styles.zoneEmpty}>

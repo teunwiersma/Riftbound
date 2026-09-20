@@ -12,7 +12,7 @@ import {
   type DeckData,
   type DeckZoneId,
 } from "@/api/deckTypes";
-import styles from "./deckBuilder.module.css";
+import styles from "./deckCardPool.module.css";
 import { canAddCard, legendDomains, matchesZoneType } from "@/api/deckRules";
 
 type Props = {

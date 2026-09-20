@@ -135,7 +135,16 @@ function nameCount(
     }, 0);
 }
 
-export function canAddCard(
+function isChampionCard(card: DeckCardData) {
+  return normalize(card.type).split(/\s+/).includes("champion");
+}
+
+function hasChampionTag(card: DeckCardData, legend: DeckCardData | undefined) {
+  const tag = legendChampionTag(legend);
+  return !tag || card.tags.some((value) => normalize(value) === tag);
+}
+
+function isAllowedInZone(
   deck: DeckData,
   card: DeckCardData,
   zoneId: DeckZoneId,
@@ -148,53 +157,61 @@ export function canAddCard(
     !fitsDomainIdentity(card, deckDomainIdentity(deck, cards))
   )
     return false;
-  if (
-    zoneId === "legend" &&
-    zoneTotal(deck, zoneId) >= 1 &&
-    cardCount(deck, zoneId, card.id) === 0
-  )
-    return false;
-  if (
-    zoneId === "champion" &&
-    (!normalize(card.type).split(/\s+/).includes("champion") ||
-      isSignature(card))
-  )
-    return false;
-  if (
-    zoneId === "champion" &&
-    legendChampionTag(selectedLegend(deck, cards)) &&
-    !card.tags.some(
-      (tag) =>
-        normalize(tag) === legendChampionTag(selectedLegend(deck, cards)),
-    )
-  )
-    return false;
-  if (
-    zoneId === "runes" &&
-    !fitsDomainIdentity(card, deckDomainIdentity(deck, cards))
-  )
-    return false;
-  if (
-    zoneId === "legend" &&
-    !normalize(card.type).split(/\s+/).includes("legend")
-  )
-    return false;
-  if (
-    zoneId === "battlefields" &&
-    (zoneTotal(deck, zoneId) >= 3 || nameCount(deck, zoneId, card, cards) >= 1)
-  )
-    return false;
+  return true;
+}
+
+function respectsZoneLimit(
+  deck: DeckData,
+  card: DeckCardData,
+  zoneId: DeckZoneId,
+  cards: DeckCardData[],
+) {
+  if (zoneId === "legend") {
+    return zoneTotal(deck, zoneId) < 1 || cardCount(deck, zoneId, card.id) > 0;
+  }
+  if (zoneId === "champion") {
+    return (
+      isChampionCard(card) &&
+      !isSignature(card) &&
+      hasChampionTag(card, selectedLegend(deck, cards))
+    );
+  }
+  if (zoneId === "battlefields") {
+    return (
+      zoneTotal(deck, zoneId) < 3 && nameCount(deck, zoneId, card, cards) < 1
+    );
+  }
   if (zoneId === "main" && nameCount(deck, zoneId, card, cards) >= 3)
     return false;
-  if (isUnique(card) && nameCount(deck, zoneId, card, cards) >= 1) return false;
-  if (isSignature(card)) {
-    const total = deck.cards.reduce((sum, item) => {
-      const entry = cards.find((candidate) => candidate.id === item.cardId);
-      return sum + (entry && isSignature(entry) ? item.quantity : 0);
-    }, 0);
-    if (total >= 3) return false;
-  }
   return true;
+}
+
+function respectsCopyRules(
+  deck: DeckData,
+  card: DeckCardData,
+  zoneId: DeckZoneId,
+  cards: DeckCardData[],
+) {
+  if (isUnique(card) && nameCount(deck, zoneId, card, cards) >= 1) return false;
+  if (!isSignature(card)) return true;
+  const signatures = deck.cards.reduce((sum, item) => {
+    const entry = cards.find((candidate) => candidate.id === item.cardId);
+    return sum + (entry && isSignature(entry) ? item.quantity : 0);
+  }, 0);
+  return signatures < 3;
+}
+
+export function canAddCard(
+  deck: DeckData,
+  card: DeckCardData,
+  zoneId: DeckZoneId,
+  cards: DeckCardData[],
+) {
+  return (
+    isAllowedInZone(deck, card, zoneId, cards) &&
+    respectsZoneLimit(deck, card, zoneId, cards) &&
+    respectsCopyRules(deck, card, zoneId, cards)
+  );
 }
 
 export function canMoveCard(
@@ -239,8 +256,8 @@ export function validateDeck(
 
   if (requireComplete && (total("legend") !== 1 || !legend))
     errors.push("A deck must have exactly one Legend.");
-  if (requireComplete && total("main") < 39)
-    errors.push("The main deck must contain at least 39 cards.");
+  if (requireComplete && total("main") !== 39)
+    errors.push("The main deck should contain exactly 39 cards.");
   if (requireComplete && total("runes") !== 12)
     errors.push("A deck must contain exactly 12 Runes.");
   if (requireComplete && total("battlefields") !== 3)

@@ -36,7 +36,7 @@
 }
 
 .zoneBattlefields .cardGrid {
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
 }
 
 .zoneHeader {
@@ -71,6 +71,45 @@
 .deckCard {
   width: 100%;
   background-color: var(--collection-wash);
+}
+
+.emptyCard {
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 4px;
+  flex: 0 0 180px;
+  width: 180px;
+  aspect-ratio: 3 / 4;
+  padding: 12px;
+  color: var(--muted);
+  background: color-mix(in srgb, var(--panel) 70%, transparent);
+  border: 1px dashed var(--line);
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.emptyCard:hover,
+.emptyCard:focus-visible {
+  color: var(--accent-dark);
+  background: var(--collection-wash);
+  border-color: var(--accent);
+  outline: none;
+}
+
+.emptyCard span {
+  font-size: 28px;
+  line-height: 1;
+}
+
+.emptyCard strong {
+  font-size: 12px;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.emptyCard small {
+  font-size: 11px;
 }
 
 .draggableCard {

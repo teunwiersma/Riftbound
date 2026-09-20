@@ -1,0 +1,106 @@
+.pool {
+  position: sticky;
+  top: 18px;
+  padding: 14px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+
+.search {
+  display: grid;
+  margin-top: 8px;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.pool > .search {
+  row-gap: 8px;
+  font-size: 10px;
+}
+
+.pool > div {
+  margin-top: 8px;
+}
+
+.pool > .search select {
+  width: 100%;
+  padding: 6px 8px;
+  color: var(--ink);
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.pool .search + .search {
+  margin-top: 12px;
+}
+
+.results {
+  display: grid;
+  gap: 4px;
+  max-height: 620px;
+  margin-top: 14px;
+  overflow: auto;
+}
+
+.results button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 6px;
+  text-align: left;
+  color: var(--ink);
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+
+.results button:hover {
+  background: var(--collection-wash);
+}
+
+.results span {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+  flex: 1;
+}
+
+.results small {
+  color: var(--muted);
+}
+
+.results strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.results b {
+  color: var(--accent);
+  font-size: 20px;
+}
+
+@media (max-width: 1600px) {
+  .pool {
+    order: 1;
+    position: static;
+    width: 100%;
+  }
+
+  .results {
+    max-height: 300px;
+  }
+}
+
+@media (max-width: 560px) {
+  .results {
+    max-height: 100px;
+  }
+}

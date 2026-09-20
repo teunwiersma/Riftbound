@@ -20,6 +20,7 @@ type Props = {
   data: CardDTO;
   className?: string;
   controls?: ReactNode;
+  onClick?: () => void;
 };
 
 const collectionActions: CollectionActions = {
@@ -29,12 +30,20 @@ const collectionActions: CollectionActions = {
   removeHoloFromCollection,
 };
 
-export default function Card({ data, className, controls }: Props) {
+export default function Card({ data, className, controls, onClick }: Props) {
   const isBattlefield = data.type.includes("battlefield");
 
   return (
     <div className={`${style.card} ${className ?? ""}`}>
-      <Link className={style.box} href={`../page/cards/${data.id}`}>
+      <Link
+        className={style.box}
+        href={`../page/cards/${data.id}`}
+        onClick={(event) => {
+          if (!onClick) return;
+          event.preventDefault();
+          onClick();
+        }}
+      >
         <div className={style.image}>
           <Image
             className={isBattlefield ? style.battlefieldArt : undefined}
