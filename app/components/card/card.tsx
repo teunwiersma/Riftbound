@@ -47,7 +47,6 @@ export default function Card({ data, className, controls, onClick }: Props) {
         <div className={style.image}>
           <Image
             className={isBattlefield ? style.battlefieldArt : undefined}
-            className={isBattlefield ? style.battlefieldArt : undefined}
             alt={data.name}
             src={data.art.imageURL ?? data.art.thumbnailURL}
             fill={true}
