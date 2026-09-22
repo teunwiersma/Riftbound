@@ -83,7 +83,7 @@ export default function useDeckBuilder({
                         number: result.number,
                         setCode: result.setCode,
                         savedAt: new Date().toISOString(),
-                        snapshot: {},
+                        snapshot: deck.cards,
                       },
                       ...currentDeck.versions,
                     ],
@@ -121,6 +121,13 @@ export default function useDeckBuilder({
     );
   }
 
+  function championName(cardRows: DeckData["cards"]) {
+    const champion = cardRows.find(
+      (item) => item.zone === "champion" && item.quantity > 0,
+    );
+    return cards.find((card) => card.id === champion?.cardId)?.name ?? "";
+  }
+
   function changeCard(cardId: string, delta: number, targetZone: DeckZoneId) {
     if (!active) return false;
 
@@ -155,12 +162,15 @@ export default function useDeckBuilder({
     }
 
     const nextQuantity = Math.max(0, current + delta);
+
     if (nextQuantity === current) return false;
 
     const cardIndex = active.cards.findIndex(
       (item) => item.cardId === cardId && item.zone === targetZone,
     );
+
     let nextCards = active.cards;
+
     if (cardIndex >= 0 && nextQuantity) {
       nextCards = active.cards.map((item, index) =>
         index === cardIndex ? { ...item, quantity: nextQuantity } : item,
@@ -172,6 +182,12 @@ export default function useDeckBuilder({
         ...active.cards,
         { cardId, zone: targetZone, quantity: nextQuantity },
       ];
+    }
+
+    if (targetZone === "legend" && delta < 0) {
+      nextCards = nextCards.filter(
+        (item) => item.zone !== "runes" && item.zone !== "champion",
+      );
     }
 
     if (delta > 0 && targetZone === "legend") {
@@ -193,6 +209,7 @@ export default function useDeckBuilder({
 
     const next = {
       ...active,
+      champion: championName(nextCards),
       cards: nextCards,
       updatedAt: new Date().toISOString(),
     };
@@ -222,10 +239,12 @@ export default function useDeckBuilder({
     targetZone: DeckZoneId,
   ) {
     if (!active || sourceZone === targetZone) return false;
+
     const card = cards.find((item) => item.id === cardId);
     const source = active.cards.find(
       (item) => item.cardId === cardId && item.zone === sourceZone,
     );
+
     if (!card || !source) return false;
     if (!canMoveCard(active, card, sourceZone, targetZone, cards)) return false;
 
@@ -235,9 +254,11 @@ export default function useDeckBuilder({
         (item) => !(item.cardId === cardId && item.zone === sourceZone),
       ),
     };
+
     const target = withoutSource.cards.find(
       (item) => item.cardId === cardId && item.zone === targetZone,
     );
+
     const nextCards = target
       ? withoutSource.cards.map((item) =>
           item === target
@@ -245,8 +266,10 @@ export default function useDeckBuilder({
             : item,
         )
       : [...withoutSource.cards, { ...source, zone: targetZone }];
+
     const next = {
       ...active,
+      champion: championName(nextCards),
       cards: nextCards,
       updatedAt: new Date().toISOString(),
     };

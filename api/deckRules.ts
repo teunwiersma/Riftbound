@@ -271,6 +271,12 @@ export function canMoveCard(
   const target = withoutSource.cards.find(
     (item) => item.cardId === card.id && item.zone === targetZone,
   );
+  const zone = DECK_ZONES.find((item) => item.id === targetZone);
+  if (
+    !zone ||
+    zoneTotal(withoutSource, targetZone) + source.quantity > zone.target
+  )
+    return false;
   if (!canAddCard(withoutSource, card, targetZone, cards)) return false;
   return !(
     target &&
@@ -288,6 +294,12 @@ export function validateDeck(
   const total = (zone: DeckZoneId) => zoneTotal(deck, zone);
   const legend = selectedLegend(deck, cards);
   const identity = deckDomainIdentity(deck, cards);
+  const seenRows = new Set<string>();
+
+  for (const zone of DECK_ZONES) {
+    if (total(zone.id) > zone.target)
+      errors.push(`${zone.label} may contain at most ${zone.target} cards.`);
+  }
 
   if (requireComplete) {
     for (const zone of DECK_ZONES) {
@@ -316,8 +328,6 @@ export function validateDeck(
     }
   }
 
-  if (total("sideboard") > 10)
-    errors.push("The sideboard may contain at most 10 cards.");
   if (legend && !chosenChampion(deck, cards))
     errors.push(
       "The deck must contain a Champion matching the Legend's champion tag.",
@@ -332,8 +342,37 @@ export function validateDeck(
     errors.push("A deck may contain at most 3 Signature cards.");
 
   for (const item of deck.cards) {
+    const rowKey = `${item.cardId}:${item.zone}`;
+    const zone = DECK_ZONES.find((value) => value.id === item.zone);
     const card = findCard(cards, item.cardId);
-    if (!card || item.quantity <= 0) continue;
+
+    if (seenRows.has(rowKey)) {
+      errors.push(
+        `${item.cardId} appears more than once in the ${item.zone} zone.`,
+      );
+      continue;
+    }
+
+    seenRows.add(rowKey);
+
+    if (!zone) {
+      errors.push(`Unknown deck zone: ${item.zone}.`);
+      continue;
+    }
+
+    if (!Number.isInteger(item.quantity) || item.quantity <= 0) {
+      errors.push(`${item.cardId} must have a positive whole-number quantity.`);
+      continue;
+    }
+
+    if (!card) {
+      errors.push(`Unknown card: ${item.cardId}.`);
+      continue;
+    }
+
+    if (!matchesZoneType(card.type, zone.types))
+      errors.push(`${card.name} cannot be placed in the ${zone.label}.`);
+
     if (item.zone !== "legend" && !fitsDomainIdentity(card, identity))
       errors.push(`${card.name} is outside the Legend's domain identity.`);
 

@@ -32,6 +32,7 @@ export default function DeckBuilder({ initialDecks, cards }: Props) {
     versionErrors,
     zoneId,
   } = useDeckBuilder({ initialDecks, cards });
+  const normalizedQuery = query.trim().toLowerCase();
 
   return (
     <div className={styles.page}>
@@ -71,7 +72,17 @@ export default function DeckBuilder({ initialDecks, cards }: Props) {
           {decks
             .filter(
               (deck) =>
-                !query || deck.name.toLowerCase().includes(query.toLowerCase()),
+                !normalizedQuery ||
+                deck.name.toLowerCase().includes(normalizedQuery) ||
+                deck.cards.some((item) => {
+                  const card = cards.find((value) => value.id === item.cardId);
+                  return Boolean(
+                    card &&
+                      `${card.name} ${card.type}`
+                        .toLowerCase()
+                        .includes(normalizedQuery),
+                  );
+                }),
             )
             .map((deck) => (
               <button
