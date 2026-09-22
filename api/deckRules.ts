@@ -15,18 +15,24 @@ export const DOMAIN_NAMES = [
 ] as const;
 
 const normalize = (value: string) => value.toLowerCase().trim();
+const tokens = (value: string) => normalize(value).split(/\s+/);
+
+const hasToken = (value: string, token: string) =>
+  tokens(value).includes(token);
+
+const findCard = (cards: DeckCardData[], cardId: string) =>
+  cards.find((card) => card.id === cardId);
 
 export function matchesZoneType(
   value: string,
   allowedTypes: readonly string[],
 ) {
-  return allowedTypes.some((type) =>
-    normalize(value).split(/\s+/).includes(type),
-  );
+  return allowedTypes.some((type) => hasToken(value, type));
 }
 
 export function cardDomains(card: DeckCardData) {
   const values = [card.faction, ...card.tags, ...card.keywords].map(normalize);
+
   return DOMAIN_NAMES.filter((domain) =>
     values.some((value) => value === domain || value.includes(domain)),
   );
@@ -38,10 +44,11 @@ export function legendDomains(legend: DeckCardData | undefined) {
 
 export function basicRuneForDomain(cards: DeckCardData[], domain: string) {
   const normalizedDomain = normalize(domain);
+
   return cards.find(
     (card) =>
-      normalize(card.type).split(/\s+/).includes("basic") &&
-      normalize(card.type).split(/\s+/).includes("rune") &&
+      hasToken(card.type, "basic") &&
+      hasToken(card.type, "rune") &&
       normalize(card.name) === `${normalizedDomain} rune` &&
       normalize(card.faction) === normalizedDomain,
   );
@@ -52,7 +59,7 @@ export function cardName(card: DeckCardData) {
 }
 
 export function isSignature(card: DeckCardData) {
-  return normalize(card.type).split(/\s+/).includes("signature");
+  return hasToken(card.type, "signature");
 }
 
 export function isUnique(card: DeckCardData) {
@@ -74,11 +81,13 @@ export function legendChampionTag(legend: DeckCardData | undefined) {
 
 export function selectedLegend(deck: DeckData, cards: DeckCardData[]) {
   const id = deck.cards.find((item) => item.zone === "legend")?.cardId;
-  return cards.find((card) => card.id === id);
+
+  return id ? findCard(cards, id) : undefined;
 }
 
 export function deckDomainIdentity(deck: DeckData, cards: DeckCardData[]) {
   const legend = selectedLegend(deck, cards);
+
   return legend ? cardDomains(legend) : [];
 }
 
@@ -87,19 +96,21 @@ export function fitsDomainIdentity(
   identity: readonly string[],
 ) {
   const domains = cardDomains(card);
+
   return domains.every((domain) => identity.includes(domain));
 }
 
 export function chosenChampion(deck: DeckData, cards: DeckCardData[]) {
   const legend = selectedLegend(deck, cards);
   const tag = legendChampionTag(legend);
+
   return deck.cards.some((item) => {
-    const card = cards.find((candidate) => candidate.id === item.cardId);
+    const card = findCard(cards, item.cardId);
     return (
       item.zone === "champion" &&
       card &&
       !isSignature(card) &&
-      normalize(card.type).split(/\s+/).includes("champion") &&
+      hasToken(card.type, "champion") &&
       card.tags.some((value) => normalize(value) === tag)
     );
   });
@@ -118,6 +129,18 @@ export function zoneTotal(deck: DeckData, zone: DeckZoneId) {
     .reduce((total, item) => total + item.quantity, 0);
 }
 
+export function missingCardCount(deck: DeckData, cards: DeckCardData[]) {
+  const required = deck.cards.reduce((counts, item) => {
+    counts.set(item.cardId, (counts.get(item.cardId) ?? 0) + item.quantity);
+    return counts;
+  }, new Map<string, number>());
+
+  return [...required].reduce((total, [cardId, quantity]) => {
+    const card = findCard(cards, cardId);
+    return total + Math.max(0, quantity - (card?.owned ?? 0));
+  }, 0);
+}
+
 function nameCount(
   deck: DeckData,
   zone: DeckZoneId,
@@ -127,7 +150,7 @@ function nameCount(
   return deck.cards
     .filter((item) => item.zone === zone)
     .reduce((total, item) => {
-      const entry = cards.find((candidate) => candidate.id === item.cardId);
+      const entry = findCard(cards, item.cardId);
       return (
         total +
         (entry && cardName(entry) === cardName(card) ? item.quantity : 0)
@@ -136,11 +159,12 @@ function nameCount(
 }
 
 function isChampionCard(card: DeckCardData) {
-  return normalize(card.type).split(/\s+/).includes("champion");
+  return hasToken(card.type, "champion");
 }
 
 function hasChampionTag(card: DeckCardData, legend: DeckCardData | undefined) {
   const tag = legendChampionTag(legend);
+
   return !tag || card.tags.some((value) => normalize(value) === tag);
 }
 
@@ -151,12 +175,15 @@ function isAllowedInZone(
   cards: DeckCardData[],
 ) {
   const zone = DECK_ZONES.find((item) => item.id === zoneId);
+
   if (!zone || !matchesZoneType(card.type, zone.types)) return false;
+
   if (
     zoneId !== "legend" &&
     !fitsDomainIdentity(card, deckDomainIdentity(deck, cards))
   )
     return false;
+
   return true;
 }
 
@@ -166,24 +193,28 @@ function respectsZoneLimit(
   zoneId: DeckZoneId,
   cards: DeckCardData[],
 ) {
-  if (zoneId === "legend") {
-    return zoneTotal(deck, zoneId) < 1 || cardCount(deck, zoneId, card.id) > 0;
+  switch (zoneId) {
+    case "legend":
+      return (
+        zoneTotal(deck, zoneId) < 1 || cardCount(deck, zoneId, card.id) > 0
+      );
+    case "champion":
+      return (
+        isChampionCard(card) &&
+        !isSignature(card) &&
+        hasChampionTag(card, selectedLegend(deck, cards))
+      );
+    case "battlefields":
+      return (
+        zoneTotal(deck, zoneId) < 3 && nameCount(deck, zoneId, card, cards) < 1
+      );
+    case "sideboard":
+      return zoneTotal(deck, zoneId) < 10;
+    case "main":
+      return nameCount(deck, zoneId, card, cards) < 3;
+    default:
+      return true;
   }
-  if (zoneId === "champion") {
-    return (
-      isChampionCard(card) &&
-      !isSignature(card) &&
-      hasChampionTag(card, selectedLegend(deck, cards))
-    );
-  }
-  if (zoneId === "battlefields") {
-    return (
-      zoneTotal(deck, zoneId) < 3 && nameCount(deck, zoneId, card, cards) < 1
-    );
-  }
-  if (zoneId === "main" && nameCount(deck, zoneId, card, cards) >= 3)
-    return false;
-  return true;
 }
 
 function respectsCopyRules(
@@ -193,11 +224,15 @@ function respectsCopyRules(
   cards: DeckCardData[],
 ) {
   if (isUnique(card) && nameCount(deck, zoneId, card, cards) >= 1) return false;
+
   if (!isSignature(card)) return true;
+
   const signatures = deck.cards.reduce((sum, item) => {
-    const entry = cards.find((candidate) => candidate.id === item.cardId);
+    const entry = findCard(cards, item.cardId);
+
     return sum + (entry && isSignature(entry) ? item.quantity : 0);
   }, 0);
+
   return signatures < 3;
 }
 
@@ -254,40 +289,68 @@ export function validateDeck(
   const legend = selectedLegend(deck, cards);
   const identity = deckDomainIdentity(deck, cards);
 
-  if (requireComplete && (total("legend") !== 1 || !legend))
-    errors.push("A deck must have exactly one Legend.");
-  if (requireComplete && total("main") !== 39)
-    errors.push("The main deck should contain exactly 39 cards.");
-  if (requireComplete && total("runes") !== 12)
-    errors.push("A deck must contain exactly 12 Runes.");
-  if (requireComplete && total("battlefields") !== 3)
-    errors.push("A deck must contain exactly 3 Battlefields.");
+  if (requireComplete) {
+    for (const zone of DECK_ZONES) {
+      switch (zone.id) {
+        case "legend":
+          if (total(zone.id) !== 1 || !legend)
+            errors.push("A deck must have exactly one Legend.");
+          break;
+        case "main":
+          if (total(zone.id) !== 39)
+            errors.push("The main deck should contain exactly 39 cards.");
+          break;
+        case "runes":
+          if (total(zone.id) !== 12)
+            errors.push("A deck must contain exactly 12 Runes.");
+          break;
+        case "battlefields":
+          if (total(zone.id) !== 3)
+            errors.push("A deck must contain exactly 3 Battlefields.");
+          break;
+        case "champion":
+          if (total(zone.id) !== 1)
+            errors.push("A deck must contain exactly one Champion.");
+          break;
+      }
+    }
+  }
+
+  if (total("sideboard") > 10)
+    errors.push("The sideboard may contain at most 10 cards.");
   if (legend && !chosenChampion(deck, cards))
     errors.push(
       "The deck must contain a Champion matching the Legend's champion tag.",
     );
 
   const signatures = deck.cards.reduce((sum, item) => {
-    const card = cards.find((candidate) => candidate.id === item.cardId);
+    const card = findCard(cards, item.cardId);
     return sum + (card && isSignature(card) ? item.quantity : 0);
   }, 0);
+
   if (signatures > 3)
     errors.push("A deck may contain at most 3 Signature cards.");
 
   for (const item of deck.cards) {
-    const card = cards.find((candidate) => candidate.id === item.cardId);
+    const card = findCard(cards, item.cardId);
     if (!card || item.quantity <= 0) continue;
     if (item.zone !== "legend" && !fitsDomainIdentity(card, identity))
       errors.push(`${card.name} is outside the Legend's domain identity.`);
-    if (item.zone === "main" && nameCount(deck, item.zone, card, cards) > 3)
-      errors.push(`${card.name} exceeds the 3-copy limit.`);
+
+    switch (item.zone) {
+      case "main":
+        if (nameCount(deck, item.zone, card, cards) > 3)
+          errors.push(`${card.name} exceeds the 3-copy limit.`);
+        break;
+      case "battlefields":
+        if (nameCount(deck, item.zone, card, cards) > 1)
+          errors.push(`${card.name} may only appear once as a Battlefield.`);
+        break;
+    }
+
     if (isUnique(card) && nameCount(deck, item.zone, card, cards) > 1)
       errors.push(`${card.name} is Unique and may only appear once.`);
-    if (
-      item.zone === "battlefields" &&
-      nameCount(deck, item.zone, card, cards) > 1
-    )
-      errors.push(`${card.name} may only appear once as a Battlefield.`);
   }
+
   return errors;
 }
