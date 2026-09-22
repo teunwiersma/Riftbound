@@ -4,8 +4,8 @@ type Urls = {
 }[];
 
 export const URLS = [
-  { href: '/', name: 'Dashboard' },
-  { href: '/page/catalog', name: 'Catalog' },
-  { href: '/page/collection', name: 'Collection' },
+  { href: "/", name: "Dashboard" },
+  { href: "/page/catalog", name: "Catalog" },
+  { href: "/page/collection", name: "Collection" },
+  { href: "/page/decks", name: "Decks" },
 ] as const satisfies Urls;
-

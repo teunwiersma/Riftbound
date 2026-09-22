@@ -1,0 +1,164 @@
+.zone {
+  min-width: 0;
+}
+
+.zoneMain,
+.zoneRunes,
+.zoneSideboard {
+  grid-column: 1 / -1;
+}
+
+.zoneLegend {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.zoneChampion {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.zoneBattlefields {
+  grid-column: 3;
+  grid-row: 1;
+}
+
+.zoneMain {
+  grid-row: 2;
+}
+
+.zoneRunes {
+  grid-row: 3;
+}
+
+.zoneSideboard {
+  grid-row: 4;
+}
+
+.zoneBattlefields .cardGrid {
+  flex-wrap: wrap;
+}
+
+.zoneHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.zoneHeader h2 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.zoneHeader span {
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.cardGrid {
+  display: flex;
+  flex-flow: row wrap;
+  align-items: flex-start;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.deckCard h2 {
+  display: none;
+}
+
+.deckCard {
+  width: 100%;
+  background-color: var(--collection-wash);
+}
+
+.emptyCard {
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 4px;
+  flex: 0 0 180px;
+  width: 180px;
+  aspect-ratio: 3 / 4;
+  padding: 12px;
+  color: var(--muted);
+  background: color-mix(in srgb, var(--panel) 70%, transparent);
+  border: 1px dashed var(--line);
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.emptyCard:hover,
+.emptyCard:focus-visible {
+  color: var(--accent-dark);
+  background: var(--collection-wash);
+  border-color: var(--accent);
+  outline: none;
+}
+
+.emptyCard span {
+  font-size: 28px;
+  line-height: 1;
+}
+
+.emptyCard strong {
+  font-size: 12px;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.emptyCard small {
+  font-size: 11px;
+}
+
+.draggableCard {
+  flex: 0 0 180px;
+  width: 180px;
+  min-width: 0;
+  cursor: grab;
+}
+
+.draggableCard:active {
+  cursor: grabbing;
+}
+
+.isDragging {
+  opacity: 0.45;
+}
+
+.deckControls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 0 8px 8px;
+  min-height: 28px;
+  width: 100%;
+}
+
+.deckControls button,
+.deckControls output {
+  margin-top: 8px;
+}
+
+.deckControls button {
+  width: 28px;
+  height: 28px;
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.deckControls output {
+  min-width: 20px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.zoneEmpty {
+  color: var(--muted);
+  font-size: 14px;
+}
