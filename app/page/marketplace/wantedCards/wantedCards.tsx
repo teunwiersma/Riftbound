@@ -1,12 +1,13 @@
 import { wantedCardsData, type WantedCard } from "@/api/data/wantedCards";
 import DataGrid from "@/app/components/dataGrid/dataGrid";
+import { ButtonState } from "@/app/components/button/button";
 
 const actions = [
-  "Select all",
-  "Clear",
-  "Create Order",
-  "Export",
-  "Add Wanted Card",
+  { label: "Select all" },
+  { label: "Clear" },
+  { label: "Create Order" },
+  { label: "Export" },
+  { label: "Add Wanted Card", state: ButtonState.disabled },
 ] as const;
 
 const columns = [
@@ -23,7 +24,14 @@ export default async function WantedCards() {
 
   return (
     <div>
-      <DataGrid data={wantedCards} columns={columns} actions={actions} />
+      <DataGrid
+        data={wantedCards}
+        columns={columns}
+        actions={actions}
+        labels={[
+          { label: "Wanted Cards", value: wantedCards.length.toString() },
+        ]}
+      />
     </div>
   );
 }

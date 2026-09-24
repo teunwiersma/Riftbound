@@ -1,5 +1,8 @@
+"use client";
+
 import type { ReactNode } from "react";
 
+import Button, { ButtonState } from "../button/button";
 import styles from "./dataGrid.module.css";
 
 export type DataGridColumn<T> = {
@@ -8,29 +11,52 @@ export type DataGridColumn<T> = {
   render?: (row: T) => ReactNode;
 };
 
+export type DataGridLabel = {
+  label: string;
+  value: string;
+};
+
+export { ButtonState as DataGridActionState } from "../button/button";
+
+export type DataGridAction = {
+  label: string;
+  state?: ButtonState;
+  onClick?: () => void;
+};
+
 type DataGridProps<T extends object> = {
   data: T[];
   columns: DataGridColumn<T>[];
-  actions?: readonly string[];
+  actions?: readonly DataGridAction[];
+  labels?: readonly DataGridLabel[];
 };
 
 export default function DataGrid<T extends object>({
   data,
   columns,
   actions = [],
+  labels = [],
 }: DataGridProps<T>) {
   return (
     <div className={styles.dataGrid}>
       {actions.length > 0 && (
         <div className={styles.actionsBar}>
+          <div className={styles.actionsBarLabels}>
+            {labels.map((label) => (
+              <span className={styles.actionsBarLabel} key={label.label}>
+                {label.label}
+                <span className={styles.actionsBarValue}>{label.value}</span>
+              </span>
+            ))}
+          </div>
           {actions.map((action) => (
-            <button
-              key={action}
-              type="button"
+            <Button
+              key={action.label}
+              label={action.label}
               className={styles.actionsBarButton}
-            >
-              {action}
-            </button>
+              state={action.state}
+              onClick={action.onClick}
+            />
           ))}
         </div>
       )}

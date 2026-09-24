@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
 import type { CollectionActions } from "@/api/data/collectionActions";
+import Button, { ButtonState } from "./button";
 import styles from "./button.module.css";
 
 type AddToCollectionButtonProps = {
@@ -80,48 +81,48 @@ export default function AddToCollectionButton({
         <span className={styles.collectionLabel}>Normal</span>
         <span className={styles.collectionCount}>{quantity}</span>
         <div className={styles.counterGroup}>
-          <button
-            type="button"
+          <Button
+            label="-"
             className={styles.counterButton}
             aria-label="Remove normal card from collection"
-            disabled={isPending || quantity === 0}
+            state={
+              isPending || quantity === 0
+                ? ButtonState.disabled
+                : ButtonState.active
+            }
             onClick={handleRemove}
-          >
-            -
-          </button>
-          <button
-            type="button"
+          />
+          <Button
+            label="+"
             className={styles.counterButton}
             aria-label="Add normal card to collection"
-            disabled={isPending}
+            state={isPending ? ButtonState.disabled : ButtonState.active}
             onClick={handleAdd}
-          >
-            +
-          </button>
+          />
         </div>
       </div>
       <div className={`${styles.collectionRow} ${styles.holoRow}`}>
         <span className={styles.collectionLabel}>Holo</span>
         <span className={styles.collectionCount}>{holoQuantity}</span>
         <div className={styles.counterGroup}>
-          <button
-            type="button"
+          <Button
+            label="-"
             className={styles.counterButton}
             aria-label="Remove holo card from collection"
-            disabled={isPending || holoQuantity === 0}
+            state={
+              isPending || holoQuantity === 0
+                ? ButtonState.disabled
+                : ButtonState.active
+            }
             onClick={handleRemoveHolo}
-          >
-            -
-          </button>
-          <button
-            type="button"
+          />
+          <Button
+            label="+"
             className={styles.counterButton}
             aria-label="Add holo card to collection"
-            disabled={isPending}
+            state={isPending ? ButtonState.disabled : ButtonState.active}
             onClick={handleAddHolo}
-          >
-            +
-          </button>
+          />
         </div>
       </div>
     </div>

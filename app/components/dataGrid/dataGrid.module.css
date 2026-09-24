@@ -6,14 +6,31 @@
 
 .actionsBar {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-end;
   align-items: center;
   gap: 8px;
   padding: 12px;
   background-color: var(--panel);
   border: 1px solid var(--collection-light);
   border-radius: 8px;
+}
+
+.actionsBarLabels {
+  display: flex;
+  flex: 1;
+  justify-content: space-between;
+  align-items: center;
+  min-width: 0;
+  padding-right: 12px;
+}
+
+.actionsBarLabel {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.actionsBarValue {
+  font-weight: 700;
 }
 
 .actionsBarButton {
@@ -25,8 +42,17 @@
   cursor: pointer;
 }
 
+.actionsBarButton:first-of-type {
+  margin-left: auto;
+}
+
 .actionsBarButton:hover {
   background-color: var(--collection-dark);
+}
+
+.actionsBarButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
 }
 
 .dataGrid > table {
@@ -42,8 +68,8 @@
 
 .dataGrid th {
   padding: 12px 14px;
-  color: var(--muted);
-  background: var(--collection-light);
+  color: var(--panel);
+  background: var(--collection);
   border-bottom: 1px solid var(--line);
   font-size: 12px;
   font-weight: 800;
