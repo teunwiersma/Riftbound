@@ -1,0 +1,76 @@
+.dataGrid {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+}
+
+.actionsBar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  background-color: var(--panel);
+  border: 1px solid var(--collection-light);
+  border-radius: 8px;
+}
+
+.actionsBarButton {
+  padding: 8px 16px;
+  color: var(--panel);
+  background-color: var(--collection);
+  border: 1px solid var(--collection-dark);
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.actionsBarButton:hover {
+  background-color: var(--collection-dark);
+}
+
+.dataGrid > table {
+  width: 100%;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  border-spacing: 0;
+  background: var(--panel);
+  font-size: 14px;
+  text-align: left;
+}
+
+.dataGrid th {
+  padding: 12px 14px;
+  color: var(--muted);
+  background: var(--collection-light);
+  border-bottom: 1px solid var(--line);
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.dataGrid td {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--line);
+  vertical-align: middle;
+}
+
+.dataGrid tbody tr:hover {
+  background: var(--collection-light);
+}
+
+@media (max-width: 640px) {
+  .actionsBar {
+    justify-content: flex-start;
+  }
+
+  .dataGrid {
+    overflow-x: auto;
+  }
+
+  .dataGrid > table {
+    min-width: 560px;
+  }
+}

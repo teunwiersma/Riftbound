@@ -7,7 +7,6 @@ datasource db {
   provider = "postgresql"
 }
 
-// Singleton table holding RiftboundContentDTO's top-level metadata.
 model RiftboundContent {
   id          Int      @id @default(autoincrement())
   game        String
@@ -21,96 +20,156 @@ model RiftboundContent {
 model Set {
   id                 String            @id
   name               String
+  riftboundContentId Int?
   cards              Card[]
   riftboundContent   RiftboundContent? @relation(fields: [riftboundContentId], references: [id])
-  riftboundContentId Int?
 
   @@map("sets")
 }
 
 model Card {
-  id               String   @id
-  collectorNumber  Int
-  set              Set      @relation(fields: [setId], references: [id])
-  setId            String
-  name             String
-  description      String
-  type             String
-  rarity           String
-  faction          String
-  keywords         String[]
-  flavorText       String
-  tags             String[]
-
-  // CardStatsDTO
-  energy Int
-  might  Int
-  cost   Int
-  power  Int
-
-  // CardArtDTO
-  thumbnailURL   String
-  fullURL        String
-  // Cached image bytes, used instead of the URLs to avoid re-fetching from the source on every load.
-  fullImage    Bytes?
-  artist       String
-
-  // Relation to global collection
-  collectionItem CollectionCard?
-  deckCards      DeckCard[]
+  id                 String               @id
+  collectorNumber    Int
+  setId              String
+  name               String
+  description        String
+  type               String
+  rarity             String
+  faction            String
+  keywords           String[]
+  flavorText         String
+  tags               String[]
+  energy             Int
+  might              Int
+  cost               Int
+  power              Int
+  thumbnailURL       String
+  fullURL            String
+  fullImage          Bytes?
+  artist             String
+  bought_cards       bought_cards[]
+  set                Set                  @relation(fields: [setId], references: [id])
+  collectionItem     CollectionCard?
+  deckCards          DeckCard[]
+  marketplace_orders marketplace_orders[]
+  sold_cards         sold_cards[]
+  tradebinder_cards  tradebinder_cards[]
+  wantedCards        WantedCard[]
 
   @@map("cards")
 }
 
-// Represents an owned card entry in the global collection.
 model CollectionCard {
   id           String @id @default(uuid())
-  card         Card   @relation(fields: [cardId], references: [id], onDelete: Cascade)
   cardId       String @unique
   quantity     Int    @default(0)
   holoQuantity Int    @default(0)
+  card         Card   @relation(fields: [cardId], references: [id], onDelete: Cascade)
 
   @@map("collection_cards")
 }
 
-// A named deck and its current playable card list.
 model Deck {
-  id           String        @id @default(uuid())
-  name         String
-  champion     String        @default("")
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
-  cards        DeckCard[]
-  versions     DeckVersion[]
+  id        String        @id @default(uuid())
+  name      String
+  champion  String        @default("")
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+  cards     DeckCard[]
+  versions  DeckVersion[]
 
   @@map("decks")
 }
 
-// A card quantity in one of the deck builder's zones.
 model DeckCard {
-  deck      Deck  @relation(fields: [deckId], references: [id], onDelete: Cascade)
-  deckId    String
-  card      Card  @relation(fields: [cardId], references: [id], onDelete: Cascade)
-  cardId    String
-  zone      String
-  quantity  Int   @default(1)
+  deckId   String
+  cardId   String
+  zone     String
+  quantity Int    @default(1)
+  card     Card   @relation(fields: [cardId], references: [id], onDelete: Cascade)
+  deck     Deck   @relation(fields: [deckId], references: [id], onDelete: Cascade)
 
   @@id([deckId, cardId, zone])
   @@index([cardId])
   @@map("deck_cards")
 }
 
-// Immutable deck snapshots used for version history.
 model DeckVersion {
-  id        String   @id @default(uuid())
-  deck      Deck     @relation(fields: [deckId], references: [id], onDelete: Cascade)
-  deckId    String
-  number    Int
-  setCode   String   @default("OGN")
-  snapshot  Json
-  savedAt   DateTime @default(now())
+  id       String   @id @default(uuid())
+  deckId   String
+  number   Int
+  setCode  String   @default("OGN")
+  snapshot Json
+  savedAt  DateTime @default(now())
+  deck     Deck     @relation(fields: [deckId], references: [id], onDelete: Cascade)
 
   @@unique([deckId, number])
   @@index([deckId, savedAt])
   @@map("deck_versions")
+}
+
+model bought_cards {
+  id          String   @id
+  cardId      String
+  quantity    Int      @default(1)
+  cardCost    Float    @default(0)
+  shipping    Float    @default(0)
+  purchasedAt DateTime @default(now())
+  cards       Card     @relation(fields: [cardId], references: [id], onDelete: Cascade)
+
+  @@index([cardId])
+}
+
+model marketplace_orders {
+  id        String   @id
+  cardId    String
+  quantity  Int      @default(1)
+  price     Float    @default(0)
+  status    String   @default("open")
+  createdAt DateTime @default(now())
+  cards     Card     @relation(fields: [cardId], references: [id], onDelete: Cascade)
+
+  @@index([cardId])
+}
+
+model sold_cards {
+  id         String   @id
+  cardId     String
+  quantity   Int      @default(1)
+  salePrice  Float    @default(0)
+  shipping   Float    @default(0)
+  commission Float    @default(0)
+  soldAt     DateTime @default(now())
+  cards      Card     @relation(fields: [cardId], references: [id], onDelete: Cascade)
+
+  @@index([cardId])
+}
+
+model tradebinder_cards {
+  id          String   @id
+  cardId      String
+  quantity    Int      @default(1)
+  askingPrice Float    @default(0)
+  status      String   @default("unlisted")
+  createdAt   DateTime @default(now())
+  cards       Card     @relation(fields: [cardId], references: [id], onDelete: Cascade)
+
+  @@index([cardId])
+}
+
+model WantedCard {
+  id       String   @id
+  cardId   String
+  quantity Int      @default(1)
+  set      String   @default("")
+  deck     String   @default("")
+  date     DateTime @default(now())
+  addedBy  String   @default("")
+  maxPrice Float?
+  note     String   @default("")
+  createdAt DateTime @default(now())
+  cards    Card     @relation(fields: [cardId], references: [id], onDelete: Cascade)
+
+  @@index([cardId])
+  @@map("wanted_cards")
 }

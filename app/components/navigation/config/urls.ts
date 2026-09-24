@@ -8,4 +8,5 @@ export const URLS = [
   { href: "/page/catalog", name: "Catalog" },
   { href: "/page/collection", name: "Collection" },
   { href: "/page/decks", name: "Decks" },
+  { href: "/page/marketplace", name: "Marketplace" },
 ] as const satisfies Urls;

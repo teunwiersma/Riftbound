@@ -1,13 +1,14 @@
 :root {
   --ink: #17202a;
   --muted: #69727d;
-  --paper: #f5f1e9;
+  --paper: #f4f6f2;
   --panel: #fffdf8;
   --line: #ddd5c8;
   --accent: #c84b2f;
   --accent-dark: #8b2e22;
   --gold: #d79c37;
   --collection: #2f6b54;
+  --collection-light: #b8d2c3;
   --collection-dark: #194735;
   --collection-wash: #e4e8dd;
   color-scheme: light;
