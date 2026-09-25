@@ -78,7 +78,7 @@
 }
 
 .dataGrid td {
-  padding: 12px 14px;
+  padding: 4px 14px;
   border-bottom: 1px solid var(--line);
   vertical-align: middle;
 }

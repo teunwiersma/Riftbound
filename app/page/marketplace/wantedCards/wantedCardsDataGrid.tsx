@@ -2,9 +2,11 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 import DataGrid, {
   type DataGridAction,
+  type DataGridColumn,
 } from "@/app/components/dataGrid/dataGrid";
 import CreateOrderModal, {
   type CreateOrderInput,
@@ -12,6 +14,7 @@ import CreateOrderModal, {
 } from "./modals/createOrderModal";
 import type { WantedCard } from "@/api/data/wantedCards";
 import AddCardModal, { type AddWantedCardsInput } from "./modals/addCardModal";
+import styles from "./wantedCardsDataGrid.module.css";
 
 type WantedCardsGridProps = {
   data: WantedCard[];
@@ -86,13 +89,28 @@ export default function WantedCardsGrid({ data }: WantedCardsGridProps) {
   };
 
   const columns = [
-    { key: "card", header: "Card" },
+    {
+      key: "card",
+      header: "Card",
+      render: (row: WantedCard) => (
+        <span className={styles.cardCell}>
+          <Image
+            className={styles.cardPreview}
+            src={`/api/cards/${row.cardId}/image`}
+            alt=""
+            width={26}
+            height={36}
+          />
+          <span>{row.card}</span>
+        </span>
+      ),
+    },
     { key: "quantity", header: "Quantity" },
     { key: "set", header: "Set" },
     { key: "deck", header: "Deck" },
     { key: "date", header: "Date" },
     { key: "addedBy", header: "Added by" },
-  ] satisfies { key: keyof WantedCard; header: string }[];
+  ] satisfies DataGridColumn<WantedCard>[];
 
   const actions: readonly DataGridAction<WantedCard>[] = [
     { label: "Select all", selectAll: true },
