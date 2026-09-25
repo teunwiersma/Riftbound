@@ -3,8 +3,8 @@
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
 import type { CollectionActions } from "@/api/data/collectionActions";
-import Button, { ButtonState } from "./button";
-import styles from "./button.module.css";
+import Button from "./button";
+import styles from "./addToCollectionButton.module.css";
 
 type AddToCollectionButtonProps = {
   cardId: string;
@@ -85,18 +85,12 @@ export default function AddToCollectionButton({
             label="-"
             className={styles.counterButton}
             aria-label="Remove normal card from collection"
-            state={
-              isPending || quantity === 0
-                ? ButtonState.disabled
-                : ButtonState.active
-            }
             onClick={handleRemove}
           />
           <Button
             label="+"
             className={styles.counterButton}
             aria-label="Add normal card to collection"
-            state={isPending ? ButtonState.disabled : ButtonState.active}
             onClick={handleAdd}
           />
         </div>
@@ -109,18 +103,12 @@ export default function AddToCollectionButton({
             label="-"
             className={styles.counterButton}
             aria-label="Remove holo card from collection"
-            state={
-              isPending || holoQuantity === 0
-                ? ButtonState.disabled
-                : ButtonState.active
-            }
             onClick={handleRemoveHolo}
           />
           <Button
             label="+"
             className={styles.counterButton}
             aria-label="Add holo card to collection"
-            state={isPending ? ButtonState.disabled : ButtonState.active}
             onClick={handleAddHolo}
           />
         </div>

@@ -51,7 +51,7 @@
 }
 
 .actionsBarButton:disabled {
-  cursor: not-allowed;
+  background-color: not-allowed;
   opacity: 0.5;
 }
 
@@ -81,6 +81,23 @@
   padding: 12px 14px;
   border-bottom: 1px solid var(--line);
   vertical-align: middle;
+}
+
+.checkboxCell {
+  width: 1%;
+  padding-right: 0;
+  white-space: nowrap;
+  text-align: center;
+}
+
+.checkboxCell input {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--collection);
+}
+
+.selectedRow {
+  background: var(--collection-light);
 }
 
 .dataGrid tbody tr:hover {

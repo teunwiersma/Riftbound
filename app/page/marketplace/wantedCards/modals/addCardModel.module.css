@@ -1,0 +1,136 @@
+.modalContent {
+  min-height: 400px;
+}
+
+.addCardModelContent {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.addCardModelContent strong,
+.addCardModelContent span {
+  display: block;
+}
+
+.addCardModelContent span {
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 16px;
+}
+
+.addCardModelContent label {
+  display: grid;
+  gap: 5px;
+  color: var(--muted);
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.searchSection {
+  position: relative;
+  display: grid;
+  gap: 5px;
+}
+
+.searchLabel {
+  color: var(--muted);
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.cardInput {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 8px;
+  color: var(--ink);
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  font: inherit;
+}
+
+.quantityInput {
+  width: 110px;
+  padding: 8px;
+  color: var(--ink);
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  font: inherit;
+}
+
+.searchStatus {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.searchResults {
+  position: absolute;
+  z-index: 11;
+  top: 100%;
+  right: 0;
+  left: 0;
+  display: grid;
+  max-height: 400px;
+  overflow-y: auto;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  box-shadow: 0 8px 18px rgb(0 0 0 / 15%);
+}
+
+.searchResult {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px;
+  color: var(--ink);
+  text-align: left;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  cursor: pointer;
+  font: inherit;
+}
+
+.searchResult:hover,
+.searchResult:focus-visible {
+  background: var(--surface);
+}
+
+.searchResult img {
+  width: 48px;
+  height: 68px;
+  object-fit: cover;
+}
+
+.selectedCards {
+  display: grid;
+  gap: 0;
+  margin-top: 16px;
+}
+
+.selectedCardImage {
+  width: 48px;
+  height: 68px;
+  object-fit: cover;
+}
+
+.removeButton {
+  padding: 6px 10px;
+  color: var(--accent-dark);
+  background: transparent;
+  border: 1px solid var(--accent-dark);
+  border-radius: 4px;
+  cursor: pointer;
+  font: inherit;
+}
+
+.formError {
+  margin: 0 0 16px;
+  color: var(--accent-dark);
+  font-size: 16px;
+}

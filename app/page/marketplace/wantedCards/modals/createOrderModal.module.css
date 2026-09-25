@@ -1,0 +1,58 @@
+.orderItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.orderItems {
+  display: grid;
+  gap: 10px;
+}
+
+.orderItem {
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.orderItem strong,
+.orderItem span {
+  display: block;
+}
+
+.orderItem span {
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.orderItem label,
+.shippingField {
+  display: grid;
+  gap: 5px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.orderItem input,
+.shippingField input {
+  width: 110px;
+  padding: 8px;
+  color: var(--ink);
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  font: inherit;
+}
+
+.shippingField {
+  width: 110px;
+  margin: 18px 0 18px auto;
+}
+
+.formError {
+  margin: 0 0 16px;
+  color: var(--accent-dark);
+  font-size: 14px;
+}

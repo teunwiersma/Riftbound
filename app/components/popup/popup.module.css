@@ -1,0 +1,82 @@
+.backdrop {
+  position: fixed;
+  z-index: 10;
+  inset: 0;
+  display: grid;
+  padding: 24px;
+  place-items: center;
+  background: var(--backdrop);
+}
+
+.popup {
+  width: min(100%, 600px);
+  overflow-y: auto;
+  padding: 16px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  box-shadow: 0 10px 50px rgb(20 28 31 / 24%);
+}
+
+.header,
+.actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.header {
+  margin-bottom: 20px;
+}
+
+.header h2 {
+  margin: 0;
+  color: var(--ink);
+  font-size: 24px;
+}
+
+.closeButton {
+  padding: 4px 8px;
+  color: var(--muted);
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  font-size: 16px;
+  border-radius: 4px;
+  border: 1px solid var(--line);
+}
+
+.content {
+  color: var(--ink);
+}
+
+.actions {
+  justify-content: flex-end;
+  padding-top: 16px;
+}
+
+.cancelButton,
+.saveButton {
+  padding: 10px 16px;
+  border: 1px solid var(--collection-dark);
+  border-radius: 8px;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 700;
+}
+
+.cancelButton {
+  color: var(--ink);
+  background: transparent;
+}
+
+.saveButton {
+  color: var(--panel);
+  background: var(--collection);
+}
+
+.saveButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}

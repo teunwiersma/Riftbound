@@ -7,7 +7,7 @@
   border: 0;
   background: transparent;
   color: var(--ink);
-  font-size: 1.1rem;
+  font-size: 16px;
   font-weight: 600;
   line-height: 1;
   cursor: pointer;
@@ -27,7 +27,7 @@
   color: var(--panel);
   border: none;
   border-radius: 8px;
-  font-size: 1.25rem;
+  font-size: 20px;
   font-weight: 600;
   line-height: 1;
   cursor: pointer;
@@ -44,13 +44,13 @@
   display: flex;
   width: 100%;
   flex-direction: column;
-  gap: 3px;
+  gap: 2px;
 }
 
 .collectionCount {
   min-width: 16px;
   color: var(--collection);
-  font-size: 0.95rem;
+  font-size: 16px;
   font-weight: 800;
   text-align: center;
 }
@@ -66,7 +66,7 @@
   width: 100%;
   grid-template-columns: 1fr 22px 42px;
   align-items: center;
-  min-height: 23px;
+  min-height: 24px;
   border-bottom: 1px solid var(--line);
 }
 
@@ -76,7 +76,7 @@
 
 .collectionLabel {
   color: var(--muted);
-  font-size: 0.62rem;
+  font-size: 10px;
   font-weight: 800;
   letter-spacing: 0;
   text-transform: uppercase;

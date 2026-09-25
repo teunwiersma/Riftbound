@@ -125,6 +125,7 @@ model marketplace_orders {
   cardId    String
   quantity  Int      @default(1)
   price     Float    @default(0)
+  shipping  Float    @default(0)
   status    String   @default("open")
   createdAt DateTime @default(now())
   cards     Card     @relation(fields: [cardId], references: [id], onDelete: Cascade)
