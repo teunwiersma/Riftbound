@@ -6,7 +6,6 @@ import {
   createDeck,
   deleteDeck,
   saveDeckVersion,
-  updateDeck,
 } from "@/api/data/deckActions";
 import {
   DECK_ZONES,
@@ -63,39 +62,34 @@ export default function useDeckBuilder({
     );
   }
 
-  function save(deck: DeckData, version = false) {
+  function save(deck: DeckData) {
     const saveDeck = saveQueue.current.then(async () => {
       try {
-        if (version) {
-          const result = await saveDeckVersion(
-            deck.id,
-            deck.name,
-            deck.champion,
-            deck.cards,
-          );
-          setDecks((current) =>
-            current.map((currentDeck) =>
-              currentDeck.id === deck.id
-                ? {
-                    ...currentDeck,
-                    versions: [
-                      {
-                        number: result.number,
-                        setCode: result.setCode,
-                        savedAt: new Date().toISOString(),
-                        snapshot: deck.cards,
-                      },
-                      ...currentDeck.versions,
-                    ],
-                  }
-                : currentDeck,
-            ),
-          );
-          toast.success(`Saved version ${result.number}.`);
-        } else {
-          await updateDeck(deck.id, deck.name, deck.champion, deck.cards);
-          toast.success("Deck updated.");
-        }
+        const result = await saveDeckVersion(
+          deck.id,
+          deck.name,
+          deck.champion,
+          deck.cards,
+        );
+        setDecks((current) =>
+          current.map((currentDeck) =>
+            currentDeck.id === deck.id
+              ? {
+                  ...currentDeck,
+                  versions: [
+                    {
+                      number: result.number,
+                      setCode: result.setCode,
+                      savedAt: new Date().toISOString(),
+                      snapshot: deck.cards,
+                    },
+                    ...currentDeck.versions,
+                  ],
+                }
+              : currentDeck,
+          ),
+        );
+        toast.success(`Saved version ${result.number}.`);
       } catch (error) {
         toast.error(
           error instanceof Error ? error.message : "Could not save deck.",
@@ -214,7 +208,6 @@ export default function useDeckBuilder({
       updatedAt: new Date().toISOString(),
     };
     replaceActive(next);
-    save(next);
     return true;
   }
 
@@ -274,7 +267,6 @@ export default function useDeckBuilder({
       updatedAt: new Date().toISOString(),
     };
     replaceActive(next);
-    save(next);
     return true;
   }
 

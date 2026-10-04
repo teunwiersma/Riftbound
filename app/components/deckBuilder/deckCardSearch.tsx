@@ -1,10 +1,11 @@
 "use client";
 
-import Image from "next/image";
 import { useState } from "react";
 import CardFilters, {
   type CardFilterOptions,
 } from "../cardFilters/cardFilters";
+import Card from "../card/card";
+import type { CardDTO } from "@/api/types";
 import type { CardFilterValues } from "@/api/filterQueries";
 import {
   DECK_ZONES,
@@ -12,7 +13,7 @@ import {
   type DeckData,
   type DeckZoneId,
 } from "@/api/deckTypes";
-import styles from "./deckCardPool.module.css";
+import styles from "./deckCardSearch.module.css";
 import { canAddCard, legendDomains, matchesZoneType } from "@/api/deckRules";
 
 type Props = {
@@ -26,7 +27,30 @@ type Props = {
 const normalize = (value: string) => value.toLowerCase().trim();
 const runeTypes = ["fury", "calm", "mind", "chaos", "order", "body"];
 
-export default function DeckCardPool({
+function toCardDTO(card: DeckCardData): CardDTO {
+  return {
+    id: card.id,
+    collectorNumber: 0,
+    set: card.set,
+    name: card.name,
+    description: card.description,
+    type: card.type,
+    rarity: card.rarity,
+    faction: card.faction,
+    stats: { energy: 0, might: 0, cost: 0, power: 0 },
+    keywords: card.keywords,
+    art: {
+      thumbnailURL: card.imageURL,
+      fullURL: card.imageURL,
+      imageURL: card.imageURL,
+      artist: "",
+    },
+    flavorText: "",
+    tags: card.tags,
+  };
+}
+
+export default function DeckCardSearch({
   deck,
   cards,
   zoneId,
@@ -104,20 +128,13 @@ export default function DeckCardPool({
     return (
       <div className={styles.results}>
         {visibleCards.map((card) => (
-          <button
-            type="button"
+          <Card
             key={card.id}
+            data={toCardDTO(card)}
+            className={styles.resultCard}
+            controls={false}
             onClick={() => onAdd(card.id, zoneId)}
-          >
-            <Image src={card.imageURL} alt="" width={48} height={68} />
-            <span>
-              <strong>{card.name}</strong>
-              <small>
-                {card.type} · owned {card.owned}
-              </small>
-            </span>
-            <b>+</b>
-          </button>
+          />
         ))}
       </div>
     );

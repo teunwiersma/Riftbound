@@ -1,7 +1,7 @@
 "use client";
 
 import { DECK_ZONES, type DeckData, type DeckCardData } from "@/api/deckTypes";
-import DeckCardPool from "./deckCardPool";
+import DeckCardSearch from "./deckCardSearch";
 import DeckZone from "./deckZone";
 import NarrowDeckSelect from "./narrowDeckSelect";
 import useDeckBuilder from "./useDeckBuilder";
@@ -32,17 +32,17 @@ export default function DeckBuilder({ initialDecks, cards }: Props) {
     versionErrors,
     zoneId,
   } = useDeckBuilder({ initialDecks, cards });
+
   const normalizedQuery = query.trim().toLowerCase();
 
   return (
     <div className={styles.page}>
       <header className={styles.header}>
         <div>
-          <p className={styles.eyebrow}>Riftbound / Workshop</p>
+          <p className={styles.eyebrow}>Riftbound / decks</p>
           <h1>Deck builder</h1>
           <p className={styles.subtle}>
-            Shape a list, check what the binder can supply, and keep a history
-            of every saved version.
+            Maak een mooi krachtig homo deckje dan, homo
           </p>
         </div>
         <button
@@ -78,9 +78,9 @@ export default function DeckBuilder({ initialDecks, cards }: Props) {
                   const card = cards.find((value) => value.id === item.cardId);
                   return Boolean(
                     card &&
-                      `${card.name} ${card.type}`
-                        .toLowerCase()
-                        .includes(normalizedQuery),
+                    `${card.name} ${card.type}`
+                      .toLowerCase()
+                      .includes(normalizedQuery),
                   );
                 }),
             )
@@ -121,7 +121,6 @@ export default function DeckBuilder({ initialDecks, cards }: Props) {
                       onChange={(event) =>
                         replaceActive({ ...active, name: event.target.value })
                       }
-                      onBlur={() => save(active)}
                     />
                     <div className={styles.versionMeta}>
                       <p className={styles.subtle}>
@@ -152,7 +151,7 @@ export default function DeckBuilder({ initialDecks, cards }: Props) {
                   <button
                     className={styles.primary}
                     type="button"
-                    onClick={() => save(active, true)}
+                    onClick={() => save(active)}
                     disabled={isPending || !active.name.trim()}
                   >
                     Save version
@@ -215,7 +214,7 @@ export default function DeckBuilder({ initialDecks, cards }: Props) {
               </>
             )}
           </main>
-          <DeckCardPool
+          <DeckCardSearch
             deck={active}
             cards={cards}
             zoneId={zoneId}

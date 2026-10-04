@@ -138,8 +138,8 @@ export default function DeckZone({
                   className={styles.deckCard}
                   onClick={() => onChange(row.cardId, -1)}
                   controls={
-                    <div className={styles.deckControls}>
-                      {canAdjustQuantity && (
+                    canAdjustQuantity ? (
+                      <div className={styles.deckControls}>
                         <button
                           type="button"
                           onClick={() => onChange(row.cardId, -1)}
@@ -147,9 +147,7 @@ export default function DeckZone({
                         >
                           -
                         </button>
-                      )}
-                      <output>{row.quantity}</output>
-                      {canAdjustQuantity && (
+                        <output>{row.quantity}</output>
                         <button
                           type="button"
                           onClick={() => onChange(row.cardId, 1)}
@@ -157,8 +155,10 @@ export default function DeckZone({
                         >
                           +
                         </button>
-                      )}
-                    </div>
+                      </div>
+                    ) : (
+                      false
+                    )
                   }
                 />
               </div>

@@ -148,8 +148,8 @@
   width: 100%;
   min-width: 0;
   flex-basis: auto;
-  gap: 3px;
-  font-size: 10px;
+  gap: 4px;
+  font-size: 14px;
 }
 
 .compact .searchField input {
@@ -157,9 +157,9 @@
   box-sizing: border-box;
   width: 100%;
   min-width: 0;
-  height: 28px;
-  padding: 4px 7px;
-  font-size: 11px;
+  height: 36px;
+  padding: 7px 9px;
+  font-size: 14px;
 }
 
 .compact .filterGrid {
@@ -172,12 +172,13 @@
 
 .compact .filterField {
   gap: 3px;
-  font-size: 9px;
+  font-size: 12px;
 }
 
 .compact .filterField select {
-  padding: 5px 3px;
-  font-size: 11px;
+  min-height: 36px;
+  padding: 6px;
+  font-size: 14px;
 }
 
 .compact .runeFilters {
@@ -186,9 +187,11 @@
 }
 
 .compact .runeButton {
-  width: 28px;
-  height: 28px;
-  padding: 4px;
+  box-sizing: border-box;
+  flex: 0 0 50px;
+  width: 50px;
+  height: 50px;
+  padding: 5px;
 }
 
 .compact .resetButton {

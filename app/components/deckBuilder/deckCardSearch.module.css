@@ -28,12 +28,14 @@
 
 .pool > .search select {
   width: 100%;
-  padding: 6px 8px;
+  box-sizing: border-box;
+  height: 36px;
+  padding: 7px 9px;
   color: var(--ink);
   background: var(--panel);
   border: 1px solid var(--line);
   border-radius: 4px;
-  font-size: 12px;
+  font-size: 14px;
 }
 
 .pool .search + .search {
@@ -42,49 +44,26 @@
 
 .results {
   display: grid;
-  gap: 4px;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  align-content: start;
+  gap: 8px;
   max-height: 620px;
   margin-top: 14px;
   overflow: auto;
 }
 
-.results button {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+.resultCard {
   width: 100%;
-  padding: 6px;
-  text-align: left;
-  color: var(--ink);
-  background: transparent;
-  border: 0;
-  cursor: pointer;
-}
-
-.results button:hover {
-  background: var(--collection-wash);
-}
-
-.results span {
-  display: grid;
-  gap: 3px;
   min-width: 0;
-  flex: 1;
+  border-radius: 8px;
 }
 
-.results small {
-  color: var(--muted);
+.resultCard a {
+  border-radius: 8px;
 }
 
-.results strong {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.results b {
-  color: var(--accent);
-  font-size: 20px;
+.resultCard h2 {
+  display: none;
 }
 
 @media (max-width: 1600px) {
@@ -95,12 +74,12 @@
   }
 
   .results {
-    max-height: 300px;
+    max-height: min(80vh, 620px);
   }
 }
 
 @media (max-width: 560px) {
   .results {
-    max-height: 100px;
+    max-height: 360px;
   }
 }
