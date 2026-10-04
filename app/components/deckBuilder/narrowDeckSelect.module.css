@@ -1,0 +1,26 @@
+.select {
+  display: none;
+}
+
+@media (max-width: 1600px) {
+  .select {
+    display: grid;
+    gap: 5px;
+    margin-bottom: 18px;
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+  }
+
+  .select select {
+    width: 100%;
+    padding: 10px;
+    color: var(--ink);
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    font-size: 16px;
+    font-weight: 700;
+  }
+}

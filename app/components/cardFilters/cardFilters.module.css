@@ -130,3 +130,71 @@
     align-self: start;
   }
 }
+
+.compact {
+  gap: 10px;
+}
+
+.compact .filters {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+  padding: 0;
+  background: transparent;
+  border: 0;
+}
+
+.compact .searchField {
+  width: 100%;
+  min-width: 0;
+  flex-basis: auto;
+  gap: 4px;
+  font-size: 14px;
+}
+
+.compact .searchField input {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  height: 36px;
+  padding: 7px 9px;
+  font-size: 14px;
+}
+
+.compact .filterGrid {
+  min-width: 0;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 5px;
+  width: 100%;
+  margin-top: 1px;
+}
+
+.compact .filterField {
+  gap: 3px;
+  font-size: 12px;
+}
+
+.compact .filterField select {
+  min-height: 36px;
+  padding: 6px;
+  font-size: 14px;
+}
+
+.compact .runeFilters {
+  flex-wrap: nowrap;
+  gap: 3px;
+}
+
+.compact .runeButton {
+  box-sizing: border-box;
+  flex: 0 0 50px;
+  width: 50px;
+  height: 50px;
+  padding: 5px;
+}
+
+.compact .resetButton {
+  padding: 6px 9px;
+  font-size: 12px;
+}

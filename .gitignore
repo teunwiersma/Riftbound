@@ -7,3 +7,6 @@ out/
 .vercel
 generated/
 .vscode/
+next-env.d.ts
+review-diff.txt
+tsconfig.tsbuildinfo
