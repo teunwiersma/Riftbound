@@ -33,8 +33,11 @@ const getCollectionData = async (
         ...(filters.runeType && { faction: filters.runeType }),
       },
     },
-    include: {
-      card: true,
+    orderBy: [{ card: { name: "asc" } }, { cardId: "asc" }],
+    select: {
+      quantity: true,
+      holoQuantity: true,
+      card: { omit: { fullImage: true } },
     },
   });
 

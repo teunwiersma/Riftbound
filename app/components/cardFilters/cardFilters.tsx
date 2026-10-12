@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useState, type ReactNode } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 import InfiniteCardGrid from "../infiniteCardGrid/infiniteCardGrid";
@@ -15,6 +15,14 @@ export type CardFilterOptions = {
   types: string[];
 };
 
+export type ControlledCardFiltersProps = {
+  filters: CardFilterValues;
+  onFiltersChange: (filters: CardFilterValues) => void;
+  renderResults: (filters: CardFilterValues) => ReactNode;
+  allowedTypes?: string[];
+  allowedRuneTypes?: string[];
+};
+
 const runeTypes = ["fury", "calm", "mind", "chaos", "order", "body"];
 
 type CardFiltersProps = {
@@ -23,6 +31,8 @@ type CardFiltersProps = {
   pageSize: number;
   className: string;
   options: CardFilterOptions;
+  controlled?: ControlledCardFiltersProps;
+  compact?: boolean;
 };
 
 export default function CardFilters({
@@ -31,18 +41,26 @@ export default function CardFilters({
   pageSize,
   className,
   options,
+  controlled,
+  compact = false,
 }: CardFiltersProps) {
   const pathname = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const filters: CardFilterValues = getCardFilters(searchParams);
+  const urlFilters: CardFilterValues = getCardFilters(searchParams);
+  const filters = controlled?.filters ?? urlFilters;
   const [searchFieldKey, setSearchFieldKey] = useState(0);
 
   const hasActiveFilters = Object.values(filters).some(Boolean);
 
   const updateFilter = useCallback(
     (name: keyof CardFilterValues, value: string) => {
+      if (controlled) {
+        controlled.onFiltersChange({ ...filters, [name]: value });
+        return;
+      }
+
       const params = new URLSearchParams(searchParams.toString());
 
       if (value) {
@@ -55,16 +73,26 @@ export default function CardFilters({
         scroll: false,
       });
     },
-    [pathname, router, searchParams],
+    [controlled, filters, pathname, router, searchParams],
   );
 
   function resetFilters() {
     setSearchFieldKey((key) => key + 1);
+    if (controlled) {
+      controlled.onFiltersChange({
+        search: "",
+        set: "",
+        rarity: "",
+        type: "",
+        runeType: "",
+      });
+      return;
+    }
     router.replace(pathname, { scroll: false });
   }
 
   return (
-    <div className={styles.browser}>
+    <div className={`${styles.browser} ${compact ? styles.compact : ""}`}>
       <section className={styles.filters} aria-label="Card filters">
         <SearchField
           key={searchFieldKey}
@@ -72,25 +100,31 @@ export default function CardFilters({
           onChange={(value) => updateFilter("search", value)}
         />
         <div className={styles.runeFilters} aria-label="Rune type">
-          {runeTypes.map((runeType) => {
-            const isSelected = filters.runeType === runeType;
-            const label = `${runeType[0].toUpperCase()}${runeType.slice(1)}`;
+          {runeTypes
+            .filter(
+              (runeType) =>
+                !controlled?.allowedRuneTypes ||
+                controlled.allowedRuneTypes.includes(runeType),
+            )
+            .map((runeType) => {
+              const isSelected = filters.runeType === runeType;
+              const label = `${runeType[0].toUpperCase()}${runeType.slice(1)}`;
 
-            return (
-              <button
-                key={runeType}
-                className={`${styles.runeButton} ${isSelected ? styles.runeButtonSelected : ""}`}
-                aria-label={`${label} rune`}
-                aria-pressed={isSelected}
-                title={label}
-                onClick={() =>
-                  updateFilter("runeType", isSelected ? "" : runeType)
-                }
-              >
-                <img src={`/runes/${runeType}.webp`} alt="" />
-              </button>
-            );
-          })}
+              return (
+                <button
+                  key={runeType}
+                  className={`${styles.runeButton} ${isSelected ? styles.runeButtonSelected : ""}`}
+                  aria-label={`${label} rune`}
+                  aria-pressed={isSelected}
+                  title={label}
+                  onClick={() =>
+                    updateFilter("runeType", isSelected ? "" : runeType)
+                  }
+                >
+                  <img src={`/runes/${runeType}.webp`} alt="" />
+                </button>
+              );
+            })}
         </div>
         <div className={styles.filterGrid}>
           <label className={styles.filterField}>
@@ -146,13 +180,17 @@ export default function CardFilters({
           </button>
         )}
       </section>
-      <InfiniteCardGrid
-        initialData={initialData}
-        apiPath={apiPath}
-        pageSize={pageSize}
-        className={className}
-        filters={filters}
-      />
+      {controlled ? (
+        controlled.renderResults(filters)
+      ) : (
+        <InfiniteCardGrid
+          initialData={initialData}
+          apiPath={apiPath}
+          pageSize={pageSize}
+          className={className}
+          filters={filters}
+        />
+      )}
     </div>
   );
 }

@@ -26,10 +26,16 @@ export default function InfiniteCardGrid({
   const [hasMore, setHasMore] = useState(initialData.length === pageSize);
   const [isLoading, setIsLoading] = useState(false);
   const sentinelRef = useRef<HTMLDivElement>(null);
+  const loadMoreController = useRef<AbortController | null>(null);
 
   const filterQuery = getFilterQuery(filters);
 
   useEffect(() => {
+    const previousLoadMore = loadMoreController.current;
+
+    loadMoreController.current = null;
+    previousLoadMore?.abort();
+
     const controller = new AbortController();
 
     async function loadFilteredCards() {
@@ -56,30 +62,47 @@ export default function InfiniteCardGrid({
     }
 
     void loadFilteredCards();
-    return () => controller.abort();
+
+    return () => {
+      controller.abort();
+      const pendingLoadMore = loadMoreController.current;
+      loadMoreController.current = null;
+      pendingLoadMore?.abort();
+    };
   }, [apiPath, filterQuery, pageSize]);
 
   const loadMore = useCallback(async () => {
     if (isLoading || !hasMore) return;
+
+    const controller = new AbortController();
+
+    loadMoreController.current?.abort();
+    loadMoreController.current = controller;
 
     setIsLoading(true);
 
     try {
       const response = await fetch(
         `${apiPath}?page=${page}&pageSize=${pageSize}${filterQuery ? `&${filterQuery}` : ""}`,
+        { signal: controller.signal },
       );
 
       if (!response.ok) throw new Error("Failed to load more cards");
 
       const { data }: { data: CardDTO[] } = await response.json();
 
+      if (controller.signal.aborted) return;
+
       setItems((prev) => [...prev, ...data]);
       setPage((prev) => prev + 1);
       setHasMore(data.length === pageSize);
-    } catch {
-      setHasMore(false);
+    } catch (error) {
+      if ((error as Error).name !== "AbortError") setHasMore(false);
     } finally {
-      setIsLoading(false);
+      if (loadMoreController.current === controller) {
+        loadMoreController.current = null;
+        setIsLoading(false);
+      }
     }
   }, [apiPath, filterQuery, hasMore, isLoading, page, pageSize]);
 

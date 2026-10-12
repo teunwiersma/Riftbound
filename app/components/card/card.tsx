@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import type { ReactNode } from "react";
 
 import style from "./card.module.css";
 
@@ -17,6 +18,9 @@ import {
 
 type Props = {
   data: CardDTO;
+  className?: string;
+  controls?: ReactNode;
+  onClick?: () => void;
 };
 
 const collectionActions: CollectionActions = {
@@ -26,12 +30,20 @@ const collectionActions: CollectionActions = {
   removeHoloFromCollection,
 };
 
-export default function Card({ data }: Props) {
+export default function Card({ data, className, controls, onClick }: Props) {
   const isBattlefield = data.type.includes("battlefield");
 
   return (
-    <div className={style.card}>
-      <Link className={style.box} href={`../page/cards/${data.id}`}>
+    <div className={`${style.card} ${className ?? ""}`}>
+      <Link
+        className={style.box}
+        href={`../page/cards/${data.id}`}
+        onClick={(event) => {
+          if (!onClick) return;
+          event.preventDefault();
+          onClick();
+        }}
+      >
         <div className={style.image}>
           <Image
             className={isBattlefield ? style.battlefieldArt : undefined}
@@ -49,14 +61,16 @@ export default function Card({ data }: Props) {
         <h2 className={style.name}>{data.name}</h2>
       </Link>
 
-      <div className={style.collectionCounterControls}>
-        <AddToCollectionButton
-          cardId={data.id}
-          actions={collectionActions}
-          initialQuantity={data.quantity ?? 0}
-          initialHoloQuantity={data.holoQuantity ?? 0}
-        />
-      </div>
+      {controls ?? (
+        <div className={style.collectionCounterControls}>
+          <AddToCollectionButton
+            cardId={data.id}
+            actions={collectionActions}
+            initialQuantity={data.quantity ?? 0}
+            initialHoloQuantity={data.holoQuantity ?? 0}
+          />
+        </div>
+      )}
     </div>
   );
 }

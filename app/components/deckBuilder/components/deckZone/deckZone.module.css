@@ -1,0 +1,251 @@
+.zone {
+  min-width: 0;
+}
+
+.zoneMain,
+.zoneRunes,
+.zoneSideboard {
+  grid-column: 1 / -1;
+}
+
+.zoneLegend {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.zoneChampion {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.zoneBattlefields {
+  grid-column: 3;
+  grid-row: 1;
+}
+
+.zoneMain {
+  grid-row: 2;
+}
+
+.zoneRunes {
+  grid-row: 3;
+}
+
+.zoneSideboard {
+  grid-row: 4;
+}
+
+.zoneMain .deckCard img {
+  border-radius: 8px;
+}
+
+.zoneChampion .deckCard img {
+  border-radius: 8px;
+}
+
+@container deck-zones (max-width: 1125px) {
+  .zoneBattlefields {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+
+  .zoneMain {
+    grid-row: 3;
+  }
+
+  .zoneRunes {
+    grid-row: 4;
+  }
+
+  .zoneSideboard {
+    grid-row: 5;
+  }
+}
+
+.zoneBattlefields .cardGrid {
+  flex-wrap: wrap;
+}
+
+.zoneBattlefields .draggableCard {
+  position: relative;
+  flex: 0 0 242px;
+  width: 242px;
+  height: 180px;
+}
+
+.zoneBattlefields .deckCard {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 180px;
+  height: auto;
+  transform: translate(-50%, -50%) rotate(90deg);
+  transform-origin: center;
+}
+
+.zoneBattlefields .deckCard a {
+  border-radius: 7px;
+}
+
+.zoneBattlefields .deckCard:hover {
+  transform: translate(-50%, -50%) rotate(90deg) scale(1.025);
+}
+
+.zoneBattlefields .deckCard img {
+  transform: none;
+}
+
+.zoneBattlefields .emptyCard {
+  flex: 0 0 242px;
+  width: 242px;
+  height: 180px;
+  aspect-ratio: auto;
+}
+
+@container deck-zones (max-width: 740px) {
+  .zoneBattlefields .draggableCard,
+  .zoneBattlefields .emptyCard {
+    flex-basis: 190px;
+    width: 190px;
+  }
+
+  .zoneBattlefields .deckCard {
+    transform: translate(-50%, -50%) rotate(90deg) scale(0.78);
+  }
+
+  .zoneBattlefields .deckCard:hover {
+    transform: translate(-50%, -50%) rotate(90deg) scale(0.8);
+  }
+
+  .zoneBattlefields .emptyCard {
+    height: 140px;
+  }
+}
+
+.zoneHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.zoneHeader h2 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.zoneHeader span {
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.cardGrid {
+  display: flex;
+  flex-flow: row wrap;
+  align-items: flex-start;
+  gap: 4px;
+  margin-top: 12px;
+}
+
+.deckCard h2 {
+  display: none;
+}
+
+.deckCard {
+  width: 100%;
+  background-color: var(--line);
+}
+
+.emptyCard {
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 4px;
+  flex: 0 0 180px;
+  width: 180px;
+  aspect-ratio: 3 / 4;
+  padding: 12px;
+  color: var(--muted);
+  background: color-mix(in srgb, var(--panel) 70%, transparent);
+  border: 1px dashed var(--line);
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.emptyCard:hover,
+.emptyCard:focus-visible {
+  color: var(--accent-dark);
+  background: var(--collection-wash);
+  border-color: var(--accent);
+  outline: none;
+}
+
+.emptyCard span {
+  font-size: 28px;
+  line-height: 1;
+}
+
+.emptyCard strong {
+  font-size: 12px;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.emptyCard small {
+  font-size: 11px;
+}
+
+.draggableCard {
+  flex: 0 0 180px;
+  width: 180px;
+  min-width: 0;
+  cursor: grab;
+}
+
+.draggableCard:active {
+  cursor: grabbing;
+}
+
+.isDragging {
+  opacity: 0.5;
+}
+
+.deckControls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 0 8px 8px;
+  min-height: 28px;
+  width: 100%;
+}
+
+.deckControls button,
+.deckControls output {
+  margin-top: 8px;
+}
+
+.deckControls button {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.deckControls output {
+  min-width: 20px;
+  text-align: center;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.zoneEmpty {
+  color: var(--muted);
+  font-size: 14px;
+}
