@@ -4,7 +4,7 @@ import nextVitals from "eslint-config-next/core-web-vitals";
 
 export default defineConfig([
   ...nextVitals,
-  globalIgnores([".next/**", "node_modules/**"]),
+  globalIgnores([".next/**", "node_modules/**", "generated/**"]),
   {
     rules: {
       "padding-line-between-statements": [

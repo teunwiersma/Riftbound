@@ -1,6 +1,6 @@
 "use client";
 
-import Card from "../card/card";
+import Card from "../../../card/card";
 import type { CardDTO } from "@/api/types";
 import {
   DECK_ZONES,

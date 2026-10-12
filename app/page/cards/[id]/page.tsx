@@ -28,6 +28,18 @@ export default async function CardDetails({ params }: CardDetailsProps) {
 
   const card = await prisma.card.findUnique({
     where: { id },
+    select: {
+      id: true,
+      name: true,
+      rarity: true,
+      energy: true,
+      might: true,
+      cost: true,
+      power: true,
+      flavorText: true,
+      description: true,
+      tags: true,
+    },
   });
 
   if (!card) {

@@ -268,9 +268,6 @@ export function canMoveCard(
       (item) => !(item.cardId === card.id && item.zone === sourceZone),
     ),
   };
-  const target = withoutSource.cards.find(
-    (item) => item.cardId === card.id && item.zone === targetZone,
-  );
   const zone = DECK_ZONES.find((item) => item.id === targetZone);
   if (
     !zone ||
@@ -278,11 +275,25 @@ export function canMoveCard(
   )
     return false;
   if (!canAddCard(withoutSource, card, targetZone, cards)) return false;
-  return !(
-    target &&
-    (target.quantity + source.quantity > 3 ||
-      ["legend", "champion", "battlefields"].includes(targetZone))
-  );
+
+  const targetNameCount = nameCount(withoutSource, targetZone, card, cards);
+  if (
+    (targetZone === "main" && targetNameCount + source.quantity > 3) ||
+    (targetZone === "battlefields" && targetNameCount + source.quantity > 1) ||
+    (isUnique(card) && targetNameCount + source.quantity > 1)
+  )
+    return false;
+
+  if (isSignature(card)) {
+    const signatureCount = withoutSource.cards.reduce((total, item) => {
+      const entry = findCard(cards, item.cardId);
+      return total + (entry && isSignature(entry) ? item.quantity : 0);
+    }, 0);
+
+    if (signatureCount + source.quantity > 3) return false;
+  }
+
+  return true;
 }
 
 export function validateDeck(

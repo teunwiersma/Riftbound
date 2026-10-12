@@ -44,11 +44,14 @@ const getCatalogData = async (
         ...(filters.type && { type: filters.type }),
         ...(filters.runeType && { faction: filters.runeType }),
       },
-      // Excluded: embedding the cached image bytes directly in the page payload
-      // blows up page size (fine for a single card, not for a list). Served via
-      // a dedicated route instead, see app/api/cards/[id]/image/route.ts.
+      orderBy: [{ name: "asc" }, { id: "asc" }],
+      // Full image bytes are served separately by the card image route.
       omit: { fullImage: true },
-      include: { collectionItem: true },
+      include: {
+        collectionItem: {
+          select: { quantity: true, holoQuantity: true },
+        },
+      },
     });
 
     const filteredCards = filters.search

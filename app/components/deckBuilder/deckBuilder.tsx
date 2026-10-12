@@ -1,10 +1,10 @@
 "use client";
 
 import { DECK_ZONES, type DeckData, type DeckCardData } from "@/api/deckTypes";
-import DeckCardSearch from "./deckCardSearch";
-import DeckZone from "./deckZone";
-import NarrowDeckSelect from "./narrowDeckSelect";
-import useDeckBuilder from "./useDeckBuilder";
+import DeckCardSearch from "./components/deckCardSearch/deckCardSearch";
+import DeckZone from "./components/deckZone/deckZone";
+import NarrowDeckSelect from "./components/narrowDeckSelect/narrowDeckSelect";
+import useDeckBuilder from "./hooks/useDeckBuilder";
 import { zoneTotal } from "@/api/deckRules";
 import styles from "./deckBuilder.module.css";
 

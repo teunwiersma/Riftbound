@@ -3,8 +3,8 @@
 import { useState } from "react";
 import CardFilters, {
   type CardFilterOptions,
-} from "../cardFilters/cardFilters";
-import Card from "../card/card";
+} from "../../../cardFilters/cardFilters";
+import Card from "../../../card/card";
 import type { CardDTO } from "@/api/types";
 import type { CardFilterValues } from "@/api/filterQueries";
 import {
