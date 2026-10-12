@@ -128,12 +128,19 @@ export default function DeckBuilder({ initialDecks, cards }: Props) {
                           ? `Version ${active.versions[0].number} saved ${new Date(active.versions[0].savedAt).toLocaleDateString()}`
                           : "Not saved as a version yet"}
                       </p>
-                      {versionErrors.length > 0 && (
-                        <span className={styles.validationError}>
-                          {versionErrors.join(" ")}
-                        </span>
-                      )}
                     </div>
+                    {versionErrors.length > 0 && (
+                      <div className={styles.validationErrors}>
+                        {versionErrors.map((error, index) => (
+                          <span
+                            className={styles.validationError}
+                            key={`${index}-${error}`}
+                          >
+                            {error}
+                          </span>
+                        ))}
+                      </div>
+                    )}
                   </div>
                   <div className={styles.stats}>
                     <strong>
