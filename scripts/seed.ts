@@ -15,7 +15,9 @@ async function fetchImage(url: string): Promise<Uint8Array | null> {
       console.warn(`Failed to fetch image ${url}: ${response.status}`);
       return null;
     }
-    return new Uint8Array(await response.arrayBuffer()) as Uint8Array<ArrayBuffer>;
+    return new Uint8Array(
+      await response.arrayBuffer(),
+    ) as Uint8Array<ArrayBuffer>;
   } catch (error) {
     console.warn(`Failed to fetch image ${url}:`, error);
     return null;
@@ -23,10 +25,27 @@ async function fetchImage(url: string): Promise<Uint8Array | null> {
 }
 
 async function main() {
-  const filePath = path.join(__dirname, "..", "riftbound_cards.json");
+  const filePath = path.join(
+    __dirname,
+    "..",
+    "riftbound_cards_from_piltover.json",
+  );
   const data: RiftboundContentDTO = JSON.parse(
     fs.readFileSync(filePath, "utf-8"),
   );
+
+  const [existingCards, collectionItems] = await Promise.all([
+    prisma.card.findMany({ select: { id: true, fullImage: true } }),
+    prisma.collectionCard.findMany({
+      select: { id: true, cardId: true, quantity: true, holoQuantity: true },
+    }),
+  ]);
+  const cachedImages = new Map(
+    existingCards.map((card) => [card.id, card.fullImage]),
+  );
+
+  // Deleting a card cascades to its collection row, so restore saved quantities below.
+  await prisma.card.deleteMany();
 
   await prisma.riftboundContent.upsert({
     where: { id: CONTENT_ID },
@@ -51,11 +70,8 @@ async function main() {
     });
 
     for (const card of set.cards) {
-      const existing = await prisma.card.findUnique({
-        where: { id: card.id },
-        select: { fullImage: true },
-      });
-      const fullImage = existing?.fullImage ?? (await fetchImage(card.art.fullURL));
+      const fullImage =
+        cachedImages.get(card.id) ?? (await fetchImage(card.art.fullURL));
       const fullImageBytes = fullImage
         ? (new Uint8Array(fullImage) as Uint8Array<ArrayBuffer>)
         : undefined;
@@ -81,15 +97,27 @@ async function main() {
         artist: card.art.artist,
       };
 
-      await prisma.card.upsert({
-        where: { id: card.id },
-        update: fields,
-        create: { id: card.id, ...fields },
+      await prisma.card.create({
+        data: { id: card.id, ...fields },
       });
     }
 
     console.log(`Seeded set ${set.id} (${set.cards.length} cards)`);
   }
+
+  const cardIds = new Set(
+    data.sets.flatMap((set) => set.cards.map((card) => card.id)),
+  );
+  await prisma.collectionCard.createMany({
+    data: collectionItems
+      .filter((item) => cardIds.has(item.cardId))
+      .map((item) => ({
+        id: item.id,
+        cardId: item.cardId,
+        quantity: item.quantity,
+        holoQuantity: item.holoQuantity,
+      })),
+  });
 }
 
 main()

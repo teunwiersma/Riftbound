@@ -1,0 +1,51 @@
+.navigation {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: var(--nav-width-desktop);
+  height: 100vh;
+  z-index: 999;
+  padding: 16px;
+  box-shadow: 0 0 15px color-mix(in srgb, var(--ink) 25%, transparent);
+  border-right: 1px solid var(--nav-sidebar-border);
+  background-color: var(--panel);
+  display: flex;
+  flex-direction: column;
+  gap: 36px;
+}
+
+.navigation h1 {
+  font-size: 22px;
+}
+
+.navigation nav {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.navigation a {
+  font-size: 18px;
+  font-weight: 700;
+  padding: 6px 12px;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  color: var(--muted);
+  transition:
+    color 0.25s,
+    background-color 0.25s,
+    border-color 0.25s;
+}
+
+.navigation a:hover {
+  color: var(--nav-text-color-hover);
+  background-color: var(--nav-text-background-color);
+  border: 1px solid color-mix(in srgb, var(--collection) 18%, transparent);
+}
+
+.navigation a.active {
+  color: var(--collection-wash);
+  background-color: var(--collection-dark);
+}
+

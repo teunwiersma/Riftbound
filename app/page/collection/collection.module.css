@@ -1,0 +1,11 @@
+.collectionPage {
+  padding: 16px;
+}
+
+.collection {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 16px;
+  width: 100%;
+}

@@ -1,0 +1,24 @@
+.errorButton {
+  padding: 8px 20px;
+  background-color: var(--accent);
+  color: var(--panel);
+  border: none;
+  border-radius: 8px;
+  font-size: 1.25rem;
+  font-weight: 600;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.errorDetails {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  max-width: 1024px;
+  margin: 2rem auto;
+  padding: 1.5rem;
+  background-color: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--ink);
+}

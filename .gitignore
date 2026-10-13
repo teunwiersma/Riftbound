@@ -5,4 +5,5 @@ out/
 .env*
 !.env.example
 .vercel
-generated/prisma/
+generated/
+.vscode/
