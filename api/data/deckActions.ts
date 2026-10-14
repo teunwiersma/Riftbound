@@ -113,35 +113,42 @@ export async function saveDeckVersion(
   if (!name.trim()) throw new Error("A deck name is required.");
   await assertValidDeck(deckId, name, champion, cards, false);
 
-  const latest = await prisma.deckVersion.findFirst({
-    where: { deckId },
-    orderBy: { number: "desc" },
-  });
-
-  const nextNumber = (latest?.number ?? 0) + 1;
   const data = snapshot(cards);
-  const setCode = "OGN";
+  const setVersion = "Version";
 
-  await prisma.$transaction([
-    prisma.deck.update({
-      where: { id: deckId },
-      data: { name: name.trim() || "New deck", champion: champion.trim() },
-    }),
-    prisma.deckCard.deleteMany({ where: { deckId } }),
+  const nextNumber = await prisma.$transaction(
+    async (transaction) => {
+      const latest = await transaction.deckVersion.findFirst({
+        where: { deckId },
+        orderBy: { number: "desc" },
+      });
 
-    prisma.deckCard.createMany({
-      data: cards
-        .filter((card) => card.quantity > 0)
-        .map((card) => ({ ...card, deckId })),
-    }),
+      const number = (latest?.number ?? 0) + 1;
 
-    prisma.deckVersion.create({
-      data: { deckId, number: nextNumber, setCode, snapshot: data },
-    }),
-  ]);
+      await transaction.deck.update({
+        where: { id: deckId },
+        data: { name: name.trim() || "New deck", champion: champion.trim() },
+      });
+
+      await transaction.deckCard.deleteMany({ where: { deckId } });
+
+      await transaction.deckCard.createMany({
+        data: cards
+          .filter((card) => card.quantity > 0)
+          .map((card) => ({ ...card, deckId })),
+      });
+
+      await transaction.deckVersion.create({
+        data: { deckId, number, setCode: setVersion, snapshot: data },
+      });
+
+      return number;
+    },
+    { isolationLevel: "Serializable" },
+  );
 
   revalidatePath("/page/decks");
-  return { number: nextNumber, setCode };
+  return { number: nextNumber, setCode: setVersion };
 }
 
 export async function deleteDeck(deckId: string) {

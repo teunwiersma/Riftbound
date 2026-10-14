@@ -17,7 +17,57 @@ A [Next.js](https://nextjs.org) app for browsing the Riftbound TCG card catalog,
 npm install
 ```
 
-### 2. Run the dev server
+### 2. Configure PostgreSQL
+
+Set `DATABASE_URL` in `.env.local` to a PostgreSQL connection string. For
+environments with separate pooled and direct connections, set `DIRECT_URL` to
+the direct connection used for schema migrations.
+
+### 3. Create a fresh database schema and seed cards
+
+```bash
+npm run db:migrate
+npm run seed
+```
+
+`db:migrate` is for development: Prisma applies pending migrations and can
+create a new migration when the schema changes. `seed` adds or updates card
+data after the tables exist; it does not create the database schema.
+
+### Existing databases
+
+Back up the database before changing its migration history. The initial
+migration creates the tables described by `prisma/schema.prisma`.
+
+If the existing tables already match that initial migration, mark it as
+applied once:
+
+```bash
+npx prisma migrate resolve --applied 20261012000000_init
+```
+
+This command only records the migration in Prisma's migration-history table; it
+does not create, alter, or verify application tables. Confirm the live schema
+matches the initial migration first. Do not run `db:migrate` or `db:deploy`
+against an existing schema before that check: Prisma may report drift, and the
+initial migration may try to create tables that already exist. If the schemas
+differ, reconcile the live schema and migration history deliberately instead
+of marking the initial migration as applied.
+
+### Deployment
+
+Commit migration SQL with schema changes, then apply the committed migrations
+to the deployment database before building or starting the app:
+
+```bash
+npm run db:deploy
+```
+
+`db:deploy` applies pending migrations without creating new ones or prompting
+for development resets. It is intended for deployment, not for generating
+migrations during local development.
+
+### 4. Run the dev server
 
 ```bash
 npm run dev
@@ -41,22 +91,25 @@ api/
     catalog.ts      # Catalog data access (Prisma queries)
     prisma.ts        # Prisma client singleton
 prisma/
-  schema.prisma      # Database schema (RiftboundContent, Set, Card)
+  schema.prisma      # Database schema
+  migrations/        # Versioned PostgreSQL migrations
 scripts/
-  seed.ts            # Seeds the database from riftbound_cards.json
+  seed.ts            # Seeds the database from riftbound_cards_from_piltover.json
 ```
 
 ## Available scripts
 
-| Script                 | Description                                   |
-| ---------------------- | --------------------------------------------- |
-| `npm run dev`          | Start the Next.js development server          |
-| `npm run build`        | Build the app for production                  |
-| `npm run start`        | Run the production build                      |
-| `npm run lint`         | Run ESLint                                    |
-| `npm run format`       | Format files with Prettier                    |
-| `npm run format:check` | Check formatting without writing changes      |
-| `npm run seed`         | Seed the database from `riftbound_cards.json` |
+| Script                 | Description                                                 |
+| ---------------------- | ----------------------------------------------------------- |
+| `npm run dev`          | Start the Next.js development server                        |
+| `npm run build`        | Build the app for production                                |
+| `npm run start`        | Run the production build                                    |
+| `npm run lint`         | Run ESLint                                                  |
+| `npm run db:migrate`   | Create/apply local development migrations                   |
+| `npm run db:deploy`    | Apply committed migrations for deployment                   |
+| `npm run format`       | Format files with Prettier                                  |
+| `npm run format:check` | Check formatting without writing changes                    |
+| `npm run seed`         | Seed/update cards from `riftbound_cards_from_piltover.json` |
 
 ## Data model
 
